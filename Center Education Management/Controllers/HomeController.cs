@@ -62,12 +62,12 @@ namespace Center_Education_Management.Controllers
                 },
                 Team = new List<TeamMemberItem>
                 {
-                    new() { ImageUrl = "/assets/t1.jpg", Name = "أحمد أمين", Role = "Backend مطور" },
-                    new() { ImageUrl = "/assets/team-w1.jpg", Name = "سارة محمد", Role = "مصممة UI/UX" },
-                    new() { ImageUrl = "/assets/t3.jpg", Name = "محمد خالد", Role = "Full Stack Developer" },
-                    new() { ImageUrl = "/assets/t2.jpg", Name = "نورهان علي", Role = "UI/UX Designer" },
-                    new() { ImageUrl = "/assets/person-owner.jpg", Name = "عمر مصطفى", Role = "مدير المشروع" },
-                    new() { ImageUrl = "/assets/team-w1.jpg", Name = "ياسمين أحمد", Role = "مسؤولة الجودة" },
+                    new() { ImageUrl = "/assets/am.jpg", Name = "Ahmed Elmelegy", Role = "Team Leader & Backend Developer (.NET)" },
+                    new() { ImageUrl = "/assets/3li.jpg", Name = "Ali Fathy", Role = "Backend Developer (.NET)" },
+                    new() { ImageUrl = "/assets/3zz.jpg", Name = "Mohamed Abu-eliz", Role = "Frontend Developer" },
+                    new() { ImageUrl = "/assets/p.jpg", Name = "Mohamed Ahmed Ali", Role = "Database Developer" },
+                    new() { ImageUrl = "/assets/p.jpg", Name = "Ahmed Ashraf", Role = "Database Developer" },
+                    new() { ImageUrl = "/assets/p.jpg", Name = "Ahmed Gomaa", Role = "UI/UX Designer" },
                 },
             };
 
