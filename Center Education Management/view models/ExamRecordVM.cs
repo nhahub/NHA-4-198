@@ -1,5 +1,5 @@
 ﻿using Center_Education_Management.Enums;
-using Center_Education_Management.Model;
+using Center_Education_Management.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

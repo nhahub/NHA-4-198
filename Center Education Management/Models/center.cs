@@ -1,5 +1,6 @@
-﻿using Center_Education_Management.Models;
-using Center_Education_Management.Enums;
+﻿using Center_Education_Management.Enums;
+using Center_Education_Management.Models;
+using Center_Education_managment.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

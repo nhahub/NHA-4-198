@@ -1,5 +1,5 @@
 using Center_Education_Management.Enums;
-using Center_Education_Management.Model;
+using Center_Education_Management.Models;
 using Center_Education_Management.Repository;
 using Center_Education_Management.view_models;
 using Microsoft.AspNetCore.Mvc;

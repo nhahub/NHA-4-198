@@ -1,5 +1,5 @@
 ﻿using Center_Education_Management.Enums;
-using Center_Education_Management.Model;
+using Center_Education_Management.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Center_Education_Management.Model
+namespace Center_Education_Management.Models
 {
     public class Session
     {

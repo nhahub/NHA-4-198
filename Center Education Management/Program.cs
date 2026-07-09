@@ -15,9 +15,8 @@ namespace Center_Education_Management
 
             // DbContext
             builder.Services.AddDbContext<CenterDBContext>(options =>
-     options.UseSqlServer(
-         "Data Source=.\\SQLEXPRESS;Initial Catalog=ahmed;Integrated Security=True;TrustServerCertificate=True;Encrypt=True")
-     .UseLazyLoadingProxies());
+            options.UseSqlServer("DefaultConnection")
+            .UseLazyLoadingProxies());
 
             // Unit Of Work
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

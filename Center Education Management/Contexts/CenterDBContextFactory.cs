@@ -10,7 +10,7 @@ namespace Center_Education_Management.EFcore
             var optionsBuilder = new DbContextOptionsBuilder<CenterDBContext>();
 
             optionsBuilder
-                .UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=ahmed;Integrated Security=True;Encrypt=True;TrustServerCertificate=True")
+                .UseSqlServer("DefaultConnection")
                 .UseLazyLoadingProxies();
 
             return new CenterDBContext(optionsBuilder.Options);

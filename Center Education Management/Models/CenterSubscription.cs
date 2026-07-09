@@ -1,5 +1,6 @@
-﻿using Center_Education_Management.Models;
-using Center_Education_Management.Enums;
+﻿using Center_Education_Management.Enums;
+using Center_Education_Management.Models;
+using Center_Education_managment.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Center_Education_Management.Models
+{
     public class Centersubscription
     {
         public int Id { get; set; }
@@ -24,3 +26,4 @@ namespace Center_Education_Management.Models
         public DateTime? ApprovedAt { get; set; }
     }
 }
+    

@@ -1,4 +1,4 @@
-﻿using Center_Education_Management.Model;
+﻿using Center_Education_Management.Models;
 using Center_Education_Management.Enums;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Collections.Specialized.BitVector32;
 
-namespace Center_Education_Management.Model
+namespace Center_Education_Management.Models
 {
     public class Group
     {
