@@ -1,4 +1,4 @@
-﻿using Center_Education_Management.Models;
+﻿using Center_Education_Management.Model;
 using Center_Education_Management.view_models;
 using static Center_Education_Management.view_models.ManualGradeVM;
 
@@ -349,15 +349,15 @@ namespace Center_Education_Management.serveses
             return new StudentDetailsVM
             {
                 Id = student.Id,
-                FullName = $"{student.FirstName} {student.LastName}",
+                FirstName = student.FirstName,
+                LastName = student.LastName,
                 Email = student.Email,
                 Phone = student.Phone,
-                CenterName = student.Center != null ? student.Center.Name : null,
-                StageName = student.Stage.Name,
+                CenterName = student.Center?.Name,
+                StageName = student.Stage?.Name,
                 Status = student.Status.ToString(),
                 BlockedReason = student.BlockedReason,
-                JoinedAt = student.JoinedAt,
-
+                JoinedAt = student.JoinedAt
             };
         }
         public static GroupDetailsVM DisplayGroup(this Group group)

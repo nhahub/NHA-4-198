@@ -9,18 +9,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Center_Education_Management.Migrations
+namespace center_22.Migrations
 {
     [DbContext(typeof(CenterDBContext))]
-    [Migration("20260705192055_intialcreate5_7")]
-    partial class intialcreate5_7
+    [Migration("20260708102111_011")]
+    partial class _011
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.17")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)

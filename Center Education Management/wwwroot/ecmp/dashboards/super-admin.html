@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Super Admin - TeachFlow</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><h2>Super Admin</h2><small>Platform Control</small></div>
+    <nav class="nav">
+      <a href="#" data-page="overview" data-title="Overview"><span>Overview</span></a>
+      <a href="#" data-page="requests" data-title="Center Requests"><span>Center Requests</span></a>
+      <a href="#" data-page="centers" data-title="All Centers"><span>All Centers</span></a>
+      <a href="#" data-page="plans" data-title="Subscription Plans"><span>Plans</span></a>
+      <a href="#" data-page="users" data-title="All Users"><span>Users</span></a>
+    </nav>
+    <button class="logout">Logout</button>
+  </aside>
+  <main class="main">
+    <div id="topbarSlot"></div>
+    <div class="content">
+      <section id="page-overview" class="page">
+        <div class="stats" id="stats"></div>
+        <div class="card"><h3>Recent Center Requests</h3><div id="recentReq"></div></div>
+      </section>
+
+      <section id="page-requests" class="page">
+        <div class="card"><h3>Pending Center Requests</h3><div id="requestsTable"></div></div>
+      </section>
+
+      <section id="page-centers" class="page">
+        <div class="card"><h3>All Centers</h3><div id="centersTable"></div></div>
+      </section>
+
+      <section id="page-plans" class="page">
+        <div class="card"><h3>Subscription Plans</h3><div class="plans" id="plansList"></div></div>
+      </section>
+
+      <section id="page-users" class="page">
+        <div class="card"><h3>All Platform Users</h3><div id="usersTable"></div></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+const user = Auth.require('super_admin');
+document.getElementById('topbarSlot').outerHTML = topbar(user);
+
+let dashboardData = null;
+
+function buildSuperAdminDataFromStore(){
+  const d = DB.get();
+  const activePlanNames = new Set(d.centers.map(c => c.plan));
+  return {
+    requests: d.centerRequests,
+    centers: d.centers,
+    plans: d.plans.map(p => ({...p, isActive: activePlanNames.has(p.name)})),
+    users: d.users.map(u => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      phone: u.phone || '',
+      role: u.role,
+      isActive: true
+    })),
+    stats: {
+      totalCenters: d.centers.length,
+      pendingRequests: d.centerRequests.filter(r => r.state === 'waiting').length,
+      activeSubscriptions: d.centers.filter(c => String(c.status).toLowerCase() === 'active').length,
+      totalUsers: d.users.length,
+      monthlyRevenue: d.centers.reduce((sum, c) => sum + (d.plans.find(p => p.name === c.plan)?.priceMonthly || 0), 0)
+    }
+  };
+}
+
+async function loadDashboard(){
+  if(!location.search.includes('serverData=1')){
+    dashboardData = buildSuperAdminDataFromStore();
+    return;
+  }
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 1500);
+    const res = await fetch('/api/dashboard/super-admin', { headers: { 'Accept': 'application/json' }, signal: controller.signal });
+    clearTimeout(timer);
+    if(!res.ok) throw new Error('Could not load dashboard data');
+    dashboardData = await res.json();
+  } catch (err) {
+    dashboardData = buildSuperAdminDataFromStore();
+    UI.toast('Showing available dashboard data', 'error');
+  }
+}
+
+function table(cols, rows){
+  if(!rows.length) return '<p style="color:var(--muted)">No data.</p>';
+  return `<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${
+    rows.map(r=>`<tr>${r.map(c=>`<td>${c ?? ''}</td>`).join('')}</tr>`).join('')
+  }</tbody></table>`;
+}
+
+function badge(s, color){
+  const colors = {Active:'green', active:'green', waiting:'amber', approved:'green', rejected:'red', Suspended:'red', Deleted:'red'};
+  return `<span class="badge ${color || colors[s] || 'blue'}">${s}</span>`;
+}
+
+function render(){
+  const d = dashboardData;
+  const pending = d.requests.filter(r => r.state === 'waiting');
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="lbl">Total Centers</div><div class="val">${d.stats.totalCenters}</div></div>
+    <div class="stat"><div class="lbl">Pending Requests</div><div class="val">${d.stats.pendingRequests}</div></div>
+    <div class="stat"><div class="lbl">Active Centers</div><div class="val">${d.stats.activeSubscriptions}</div></div>
+    <div class="stat"><div class="lbl">Total Users</div><div class="val">${d.stats.totalUsers}</div></div>
+    <div class="stat"><div class="lbl">Plans Revenue</div><div class="val">EGP ${d.stats.monthlyRevenue}</div></div>
+  `;
+
+  document.getElementById('recentReq').innerHTML = table(
+    ['Center','Phone','City','Date','Status'],
+    d.requests.slice(0, 5).map(r => [r.centerName, r.contactPhone, r.city, r.createdAt, badge(r.state)])
+  );
+
+  document.getElementById('requestsTable').innerHTML = pending.length ? table(
+    ['ID','Center','Phone','Address','City','Date','Actions'],
+    pending.map(r => [
+      r.id,
+      r.centerName,
+      r.contactPhone,
+      r.address,
+      r.city,
+      r.createdAt,
+      `<button class="btn sm success" onclick="approveReq(${r.id})">Approve</button>
+       <button class="btn sm danger" onclick="rejectReq(${r.id})">Reject</button>
+       <button class="btn sm ghost" onclick="viewReq(${r.id})">View</button>`
+    ])
+  ) : '<p style="color:var(--muted)">No pending requests.</p>';
+
+  document.getElementById('centersTable').innerHTML = table(
+    ['ID','Name','Owner Email','Plan','Status','Address','City'],
+    d.centers.map(c => [c.id, c.name, c.email, c.plan, badge(c.status), c.address, c.city])
+  );
+
+  document.getElementById('plansList').innerHTML = d.plans.length ? d.plans.map(p => `
+    <div class="plan ${p.name === 'Pro' ? 'popular' : ''}">
+      <h4>${p.name}</h4>
+      <div class="price">EGP ${p.priceMonthly}<small style="font-size:13px;color:var(--muted)">/mo</small></div>
+      <ul>
+        <li>${p.maxStudents} Students</li>
+        <li>${p.maxTeachers} Teachers</li>
+        <li>${p.maxGroups} Groups</li>
+        <li>${p.storageGB} GB Storage</li>
+      </ul>
+    </div>`).join('') : '<p style="color:var(--muted)">No plans.</p>';
+
+  document.getElementById('usersTable').innerHTML = table(
+    ['ID','Name','Email','Phone','Role','Active'],
+    d.users.map(u => [u.id, u.name, u.email, u.phone, badge(u.role, 'blue'), u.isActive ? 'Yes' : 'No'])
+  );
+}
+
+window.viewReq = function(id){
+  const r = dashboardData.requests.find(x => x.id === id);
+  UI.modal('Request Details', `<p><b>Center:</b> ${r.centerName}</p><p><b>Phone:</b> ${r.contactPhone}</p><p><b>Address:</b> ${r.address}, ${r.city}</p><p><b>Status:</b> ${r.state}</p><p><b>Date:</b> ${r.createdAt}</p>`);
+};
+
+window.approveReq = async function(id){
+  if(!location.search.includes('serverData=1')){
+    const r = dashboardData.requests.find(x => x.id === id);
+    if(r) r.state = 'approved';
+    UI.toast('Request approved');
+    render();
+    return;
+  }
+  const res = await fetch(`/api/dashboard/center-requests/${id}/approve`, { method: 'POST' });
+  if(!res.ok) return UI.toast('Approve failed', 'error');
+  const account = await res.json().catch(() => null);
+  UI.toast(account ? `Approved. Owner login: ${account.email} / ${account.password}` : 'Approved');
+  await loadDashboard();
+  render();
+};
+
+window.rejectReq = async function(id){
+  if(!confirm('Reject this request?')) return;
+  if(!location.search.includes('serverData=1')){
+    const r = dashboardData.requests.find(x => x.id === id);
+    if(r) r.state = 'rejected';
+    UI.toast('Request rejected');
+    render();
+    return;
+  }
+  const res = await fetch(`/api/dashboard/center-requests/${id}/reject`, { method: 'POST' });
+  if(!res.ok) return UI.toast('Reject failed', 'error');
+  UI.toast('Request rejected');
+  await loadDashboard();
+  render();
+};
+
+setupNav();
+loadDashboard()
+  .then(render)
+  .catch(err => {
+    console.error(err);
+    document.querySelector('.content').innerHTML = `<div class="card"><h3>Dashboard error</h3><p style="color:var(--danger)">${err.message}</p></div>`;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+﻿@model Center_Education_Management.Model.Notification
+
+@{
+    ViewData["Title"] = "Notification Details";
+}
+
+<h2>Notification Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.UserId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.UserId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Type)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Type)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Title)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Title)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Body)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Body)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.IsRead)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.IsRead)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.RefType)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.RefType)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.RefId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.RefId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CreatedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CreatedAt)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

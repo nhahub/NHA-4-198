@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Center_Education_Management.Model.CenterOwner>
+
+@{
+    ViewData["Title"] = "CenterOwner List";
+}
+
+<h2>CenterOwner</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">+ Create New</a>
+</p>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Id)</th>
+            <th>@Html.DisplayNameFor(m => m.NationalID)</th>
+            <th>@Html.DisplayNameFor(m => m.FirstName)</th>
+            <th>@Html.DisplayNameFor(m => m.LastName)</th>
+            <th>@Html.DisplayNameFor(m => m.Email)</th>
+            <th>@Html.DisplayNameFor(m => m.PasswordHash)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+                <td>@Html.DisplayFor(m => item.Id)</td>
+                <td>@Html.DisplayFor(m => item.NationalID)</td>
+                <td>@Html.DisplayFor(m => item.FirstName)</td>
+                <td>@Html.DisplayFor(m => item.LastName)</td>
+                <td>@Html.DisplayFor(m => item.Email)</td>
+                <td>@Html.DisplayFor(m => item.PasswordHash)</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

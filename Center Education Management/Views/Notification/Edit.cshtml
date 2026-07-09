@@ -1,0 +1,67 @@
+﻿@model Center_Education_Management.Model.Notification
+
+@{
+    ViewData["Title"] = "Edit Notification";
+}
+
+<h2>Edit Notification</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="UserId" class="form-label"></label>
+                        <input asp-for="UserId" class="form-control" type="number" />
+                        <span asp-validation-for="UserId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Type" class="form-label"></label>
+                        <select asp-for="Type" class="form-select">
+                            <option value="AbsenceAlert1">AbsenceAlert1</option>
+                            <option value="PaymentReminder">PaymentReminder</option>
+                            <option value="JoinApproved">JoinApproved</option>
+                            <option value="JoinRejected">JoinRejected</option>
+                            <option value="ExamPublished">ExamPublished</option>
+                            <option value="General">General</option>
+                        </select>
+                        <span asp-validation-for="Type" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" type="text" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Body" class="form-label"></label>
+                        <input asp-for="Body" class="form-control" type="text" />
+                        <span asp-validation-for="Body" class="text-danger"></span>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="IsRead" class="form-check-input" type="checkbox" />
+                        <label asp-for="IsRead" class="form-label"></label>
+                        <span asp-validation-for="IsRead" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="RefType" class="form-label"></label>
+                        <input asp-for="RefType" class="form-control" type="text" />
+                        <span asp-validation-for="RefType" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="RefId" class="form-label"></label>
+                        <input asp-for="RefId" class="form-control" type="number" />
+                        <span asp-validation-for="RefId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="CreatedAt" class="form-label"></label>
+                        <input asp-for="CreatedAt" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

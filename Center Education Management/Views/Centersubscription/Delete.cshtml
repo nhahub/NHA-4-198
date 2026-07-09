@@ -1,0 +1,36 @@
+﻿@model Center_Education_Management.Model.Centersubscription
+
+@{
+    ViewData["Title"] = "Delete Centersubscription";
+}
+
+<h2>Delete Centersubscription</h2>
+
+<div class="alert alert-danger">Are you sure you want to delete this item?</div>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CenterId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CenterId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.PlanId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.PlanId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Status)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.BillingCycle)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.BillingCycle)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StartsAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StartsAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.EndsAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.EndsAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ApprovedBy)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.ApprovedBy)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ApprovedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.ApprovedAt)</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

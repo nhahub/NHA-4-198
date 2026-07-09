@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Student · ECMP</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../css/style.css"></head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><h2>🎒 Student</h2><small>Learning Portal</small></div>
+    <nav class="nav">
+      <a href="#" data-page="overview">📊 <span>Overview</span></a>
+      <a href="#" data-page="groups">👥 <span>My Groups</span></a>
+      <a href="#" data-page="schedule">📅 <span>Schedule</span></a>
+      <a href="#" data-page="attendance">✅ <span>Attendance</span></a>
+      <a href="#" data-page="exams">📝 <span>Exams</span></a>
+      <a href="#" data-page="content">📚 <span>Materials</span></a>
+      <a href="#" data-page="assignments">📋 <span>Assignments</span></a>
+      <a href="#" data-page="scan">📱 <span>Scan QR</span></a>
+    </nav>
+    <button class="logout">🚪 Logout</button>
+  </aside>
+  <main class="main">
+    <div id="topbarSlot"></div>
+    <div class="content">
+      <section id="page-overview" class="page"><div class="stats" id="stats"></div>
+        <div class="card"><h3>Next Session</h3><div id="next"></div></div></section>
+
+      <section id="page-groups" class="page"><div class="card"><h3>My Groups</h3><div id="groups"></div></div></section>
+      <section id="page-schedule" class="page"><div class="card"><h3>Upcoming Sessions</h3><div id="sched"></div></div></section>
+      <section id="page-attendance" class="page"><div class="card"><h3>Attendance Record</h3><div id="att"></div></div></section>
+      <section id="page-exams" class="page"><div class="card"><h3>Available Exams</h3><div id="exams"></div></div></section>
+      <section id="page-content" class="page"><div class="card"><h3>Course Materials</h3><div id="content"></div></div></section>
+
+      <section id="page-assignments" class="page"><div class="card"><h3>Assignments</h3>
+        <p style="color:var(--muted);font-size:13px;margin-top:-6px">Download any file your teacher attached, then upload your solved work here.</p>
+        <div id="asgGrid"></div></div></section>
+
+      <section id="page-scan" class="page"><div class="card"><h3>Scan Attendance QR</h3>
+        <p style="color:var(--muted)">Enter the token shown by your teacher to mark attendance.</p>
+        <div class="field"><label>Token</label><input class="input" id="tok" placeholder="QR-..."></div>
+        <button class="btn" id="markAtt">✅ Mark Attendance</button></div></section>
+    </div>
+  </main>
+</div>
+
+<div id="examModal"></div>
+
+<script src="../js/app.js"></script>
+<script>
+const user = Auth.require('student');
+document.getElementById('topbarSlot').outerHTML = topbar(user);
+
+function table(cols,rows){ if(!rows.length) return '<p style="color:var(--muted)">No records.</p>';
+  return `<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+function render(){
+  const d = DB.get();
+  const me = d.students.find(s=>s.id===user.id) || {groupIds:[]};
+  const myGroups = d.groups.filter(g=>(me.groupIds||[]).includes(g.id));
+  const groupIds = myGroups.map(g=>g.id);
+  const sess = d.sessions.filter(s=>groupIds.includes(s.groupId));
+  const myAtt = d.attendance.filter(a=>a.studentId===user.id);
+  const myRecs = d.examRecords.filter(r=>r.studentId===user.id);
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="lbl">Groups</div><div class="val">${myGroups.length}</div></div>
+    <div class="stat"><div class="lbl">Sessions</div><div class="val">${sess.length}</div></div>
+    <div class="stat"><div class="lbl">Attendance</div><div class="val">${myAtt.length}</div></div>
+    <div class="stat"><div class="lbl">Exams Taken</div><div class="val">${myRecs.length}</div></div>
+  `;
+  const nextSes = sess.find(s=>s.status==='scheduled');
+  document.getElementById('next').innerHTML = nextSes ? `<p><b>${d.groups.find(g=>g.id===nextSes.groupId)?.name}</b> — ${nextSes.date} ${nextSes.startTime}</p>` : '<p style="color:var(--muted)">No upcoming sessions.</p>';
+
+  document.getElementById('groups').innerHTML = myGroups.map(g=>{ const t = d.teachers.find(x=>x.id===g.teacherId);
+    return `<div class="card" style="margin-bottom:10px"><h4>${g.name}</h4><p style="color:var(--muted)">${g.subject} · Teacher: ${t?.name||'—'}</p><p>${g.schedule} · ${g.classroom}</p></div>`;
+  }).join('') || '<p style="color:var(--muted)">Not enrolled in any group.</p>';
+
+  document.getElementById('sched').innerHTML = table(['Group','Date','Time','Status'], sess.map(s=>{ const g = d.groups.find(x=>x.id===s.groupId); return [g?.name||'—',s.date,`${s.startTime}-${s.endTime}`,`<span class="badge ${s.status==='completed'?'green':'amber'}">${s.status}</span>`]; }));
+
+  document.getElementById('att').innerHTML = table(['Session','Date','Status'], myAtt.map(a=>{ const s = d.sessions.find(x=>x.id===a.sessionId); const g = s?d.groups.find(x=>x.id===s.groupId):null; return [g?.name||'—', s?.date||'—', `<span class="badge green">Present</span>`]; }));
+
+  document.getElementById('exams').innerHTML = table(['Title','Group','Duration','Marks','Status','Action'],
+    d.exams.filter(e=>groupIds.includes(e.groupId)).map(e=>{ const g = d.groups.find(x=>x.id===e.groupId);
+      const taken = myRecs.find(r=>r.examId===e.id);
+      return [e.title,g?.name||'—',e.duration+' min',e.totalMarks, taken?`<span class="badge green">${taken.score}/${e.totalMarks}</span>`:'<span class="badge amber">Available</span>',
+        taken?'-':`<button class="btn sm" onclick="startExam(${e.id})">▶ Start</button>`];
+    }));
+
+  document.getElementById('content').innerHTML = contentGrid(
+    d.content.filter(c=>groupIds.includes(c.groupId)), myGroups, false
+  );
+
+  document.getElementById('asgGrid').innerHTML = studentAssignmentGrid(
+    d.assignments.filter(a=>groupIds.includes(a.groupId)), myGroups, d.submissions, user.id
+  );
+}
+
+window.submitAssignment = function(assignmentId){
+  const d = DB.get();
+  const a = d.assignments.find(x=>x.id===assignmentId);
+  if(!a) return;
+  openSubmitAssignmentModal(a, user.id, entry=>{
+    const d2 = DB.get();
+    // Replace any previous submission by this student for this assignment (resubmit)
+    d2.submissions = d2.submissions.filter(s=>!(s.assignmentId===entry.assignmentId && s.studentId===entry.studentId));
+    d2.submissions.push(entry);
+    DB.commit(); UI.toast('✅ Assignment submitted'); render();
+  });
+};
+
+document.getElementById('markAtt').onclick = ()=>{
+  const tok = document.getElementById('tok').value.trim();
+  if(!tok.startsWith('QR-')) return UI.toast('Invalid token','error');
+  const sid = +tok.split('-')[1];
+  const d = DB.get();
+  if(d.attendance.find(a=>a.sessionId===sid && a.studentId===user.id)) return UI.toast('Already marked','error');
+  d.attendance.push({sessionId:sid, studentId:user.id, present:true, recordedAt:new Date().toLocaleString()});
+  DB.commit(); UI.toast('✅ Attendance marked'); document.getElementById('tok').value=''; render();
+};
+
+window.startExam = (eid)=>{
+  const d = DB.get();
+  const ex = d.exams.find(e=>e.id===eid);
+  const qs = (ex?.questionIds||[]).map(qid=>d.questionBank.find(q=>q.id===qid)).filter(Boolean);
+  if(!qs.length) return UI.toast('No questions yet','error');
+  location.href = './exam.html?id='+eid;
+};
+
+setupNav();
+render();
+</script>
+</body></html>

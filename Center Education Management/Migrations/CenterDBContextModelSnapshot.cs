@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Center_Education_Management.Migrations
+namespace center_22.Migrations
 {
     [DbContext(typeof(CenterDBContext))]
     partial class CenterDBContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace Center_Education_Management.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.17")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)

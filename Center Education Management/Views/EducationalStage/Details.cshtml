@@ -1,0 +1,25 @@
+﻿@model Center_Education_Management.Model.EducationalStage
+
+@{
+    ViewData["Title"] = "EducationalStage Details";
+}
+
+<h2>EducationalStage Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Name)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Name)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.LevelNumber)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.LevelNumber)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.DisplayName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.DisplayName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.EducationSystem)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.EducationSystem)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.IsActive)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.IsActive)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

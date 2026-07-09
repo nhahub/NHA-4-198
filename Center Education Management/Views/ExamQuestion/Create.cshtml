@@ -1,0 +1,63 @@
+﻿@model Center_Education_Management.Model.ExamQuestion
+
+@{
+    ViewData["Title"] = "Create ExamQuestion";
+}
+
+<h2>Create ExamQuestion</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="ExamId" class="form-label"></label>
+                        <input asp-for="ExamId" class="form-control" type="number" />
+                        <span asp-validation-for="ExamId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="QuestionBankId" class="form-label"></label>
+                        <input asp-for="QuestionBankId" class="form-control" type="number" />
+                        <span asp-validation-for="QuestionBankId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="BodySnapshot" class="form-label"></label>
+                        <input asp-for="BodySnapshot" class="form-control" type="text" />
+                        <span asp-validation-for="BodySnapshot" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="OptionsSnapshot" class="form-label"></label>
+                        <input asp-for="OptionsSnapshot" class="form-control" type="text" />
+                        <span asp-validation-for="OptionsSnapshot" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="CorrectAnswer" class="form-label"></label>
+                        <input asp-for="CorrectAnswer" class="form-control" type="text" />
+                        <span asp-validation-for="CorrectAnswer" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Type" class="form-label"></label>
+                        <select asp-for="Type" class="form-select">
+                            <option value="MCQ">MCQ</option>
+                            <option value="TrueFalse">TrueFalse</option>
+                            <option value="Essay">Essay</option>
+                        </select>
+                        <span asp-validation-for="Type" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Points" class="form-label"></label>
+                        <input asp-for="Points" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="Points" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="OrderIndex" class="form-label"></label>
+                        <input asp-for="OrderIndex" class="form-control" type="number" />
+                        <span asp-validation-for="OrderIndex" class="text-danger"></span>
+                    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

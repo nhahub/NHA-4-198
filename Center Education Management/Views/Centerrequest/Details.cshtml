@@ -1,0 +1,31 @@
+﻿@model Center_Education_Management.Model.Centerrequest
+
+@{
+    ViewData["Title"] = "Centerrequest Details";
+}
+
+<h2>Centerrequest Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CenterName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CenterName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ContactPhone)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.ContactPhone)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Address)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Address)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.City)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.City)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ReviewedById)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.ReviewedById)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.State)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.State)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CreatedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CreatedAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ReviewedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.ReviewedAt)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

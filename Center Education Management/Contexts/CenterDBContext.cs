@@ -1,4 +1,4 @@
-﻿using Center_Education_Management.Models;
+﻿using Center_Education_Management.Model;
 using Center_Education_Management.view_models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,12 +9,21 @@ using System.Threading.Tasks;
 
 namespace Center_Education_Management.EFcore
 {
-    internal class CenterDBContext : DbContext
+    // ⚠️ لازم تكون public مش internal عشان الـ Dependency Injection والـ Repository Layer يقدروا يوصلولها
+    public class CenterDBContext : DbContext
     {
+        // ✅ الكونستركتور ده ضروري عشان AddDbContext في Program.cs يقدر يمرر الـ Options بتاعته
+        public CenterDBContext(DbContextOptions<CenterDBContext> options) : base(options)
+        {
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=3F;Initial Catalog=Center_Education_Management;Integrated Security=True;Trust Server Certificate=True");
-            optionsBuilder.UseLazyLoadingProxies(true);
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=ahmed;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+                optionsBuilder.UseLazyLoadingProxies(true);
+            }
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

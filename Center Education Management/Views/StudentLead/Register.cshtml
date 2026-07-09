@@ -1,0 +1,43 @@
+@using Center_Education_Management.view_models
+@model StudentLeadStep1VM
+@{
+    ViewData["Title"] = "تسجيل طالب";
+}
+
+<section class="container section">
+  <div class="section-title"><h2>سجل بياناتك كطالب</h2><div class="dash"></div></div>
+
+  <div class="contact-card" style="max-width:640px;margin:0 auto">
+    <div class="contact-right" style="grid-column:1/-1">
+      <div asp-validation-summary="All" style="color:#c0392b;margin-bottom:14px"></div>
+
+      <form class="form-grid" asp-controller="StudentLead" asp-action="Register" method="post">
+        <label><span>الاسم</span>
+          <input asp-for="Name" placeholder="أدخل اسمك بالكامل" />
+          <span asp-validation-for="Name" style="color:#c0392b;font-size:12px"></span>
+        </label>
+        <label><span>السنة الدراسية</span>
+          <select asp-for="Grade">
+            <option value="">اختر السنة الدراسية</option>
+            <option>الصف الأول الإعدادي</option>
+            <option>الصف الثاني الإعدادي</option>
+            <option>الصف الثالث الإعدادي</option>
+            <option>الصف الأول الثانوي</option>
+            <option>الصف الثاني الثانوي</option>
+            <option>الصف الثالث الثانوي</option>
+          </select>
+          <span asp-validation-for="Grade" style="color:#c0392b;font-size:12px"></span>
+        </label>
+        <label><span>رقم التلفون</span>
+          <input asp-for="Phone" placeholder="أدخل رقم التلفون" />
+          <span asp-validation-for="Phone" style="color:#c0392b;font-size:12px"></span>
+        </label>
+        <label><span>البريد الإلكتروني (اختياري)</span>
+          <input asp-for="Email" type="email" placeholder="example@email.com" />
+          <span asp-validation-for="Email" style="color:#c0392b;font-size:12px"></span>
+        </label>
+        <button type="submit" class="btn btn-primary submit full"><i class="icon-send"></i> التالي: اختر السنتر</button>
+      </form>
+    </div>
+  </div>
+</section>

@@ -1,8 +1,159 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@using Center_Education_Management.view_models
+@model HomeIndexVM
+@{
+    ViewData["Title"] = "الرئيسية";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section id="top" class="hero">
+  <div class="container hero-grid">
+    <div>
+      <h1>حلول متكاملة لإدارة <span class="text-primary">السنتر التعليمي</span><br /><span class="h1-sub">بسهولة واحترافية</span></h1>
+      <p class="lead">TeachFlow منصة متكاملة لإدارة الطلاب، المدرسين، الحضور، الامتحانات، الواجبات، والمدفوعات من مكان واحد.</p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary">ابدأ الآن مجانًا</a>
+        <a asp-controller="Dashboard" asp-action="Login" class="btn btn-outline">جرب الداشبورد</a>
+      </div>
+      <div class="hero-meta">
+        <span><i class="icon-shield-check"></i> 100% آمن وموثوق</span>
+        <span><i class="icon-gift"></i> نسخة تجريبية مجانية</span>
+        <span><i class="icon-headphones"></i> دعم 24/7</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-img"><img src="~/assets/hero-building.jpg" alt="مبنى السنتر" /></div>
+    </div>
+  </div>
+</section>
+
+<section class="container stats">
+  @foreach (var s in Model.Stats)
+  {
+    <div class="stat">
+      <div class="stat-ico"><i class="icon-@(s.Icon)"></i></div>
+      <div><div class="stat-value">@s.Value</div><div class="stat-label">@s.Label</div></div>
+    </div>
+  }
+</section>
+
+<section id="features" class="container section">
+  <div class="section-title"><h2>ماذا يقدم النظام؟</h2><div class="dash"></div></div>
+  <div class="grid grid-4">
+    @foreach (var f in Model.Features)
+    {
+      <div class="card">
+        <div class="card-ico"><i class="icon-@(f.Icon)"></i></div>
+        <h3>@f.Title</h3><p>@f.Description</p>
+      </div>
+    }
+  </div>
+</section>
+
+<section id="how" class="container section">
+  <div class="section-title"><h2>كيف يعمل النظام؟</h2><div class="dash"></div></div>
+  <div class="grid grid-4">
+    @for (var i = 0; i < Model.Steps.Count; i++)
+    {
+      var s = Model.Steps[i];
+      <div class="step">
+        <div class="card-ico"><i class="icon-@(s.Icon)"></i></div>
+        <div><h3>@s.Title</h3><p>@s.Description</p></div>
+        @if (i < Model.Steps.Count - 1)
+        {
+          <span class="arr">←</span>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<section id="forwho" class="container section">
+  <div class="section-title"><h2>لمن هذا النظام؟</h2><div class="dash"></div></div>
+  <div class="grid grid-4">
+    @foreach (var r in Model.ForWho)
+    {
+      <div class="role">
+        <div class="img"><img src="@r.ImageUrl" alt="@r.Title" loading="lazy" /></div>
+        <div class="body"><h3>@r.Title</h3><p>@r.Description</p></div>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="container section">
+  <div class="section-title"><h2>لماذا تختار TeachFlow؟</h2><div class="dash"></div></div>
+  <div class="grid grid-3">
+    @foreach (var w in Model.Why)
+    {
+      <div class="why">
+        <div class="why-ico"><i class="icon-@(w.Icon)"></i></div>
+        <h3>@w.Title</h3><p>@w.Description</p>
+      </div>
+    }
+  </div>
+</section>
+
+<section id="contact" class="container section">
+  <div class="contact-card">
+    <div class="contact-left">
+      <div>
+        <h3>سجل الآن وابدأ رحلتك مع TeachFlow!</h3>
+        <p>سواء كنت صاحب سنتر أو طالبًا، سجل بياناتك وسنساعدك في الوصول لأقرب سنتر ومدرس مناسب.</p>
+      </div>
+      <img src="~/assets/plant.jpg" alt="" class="plant" />
+    </div>
+    <div class="contact-right">
+      @if (TempData["SuccessMessage"] is string message)
+      {
+        <div class="form-alert">@message</div>
+      }
+      <div class="tabs">
+        <button type="button" class="tab active" data-tab="owner">أنا صاحب سنتر</button>
+        <button type="button" class="tab" data-tab="student">أنا طالب</button>
+      </div>
+
+      <form class="form-grid" id="form-owner" asp-controller="Centerrequest" asp-action="Register" method="post">
+        <label><span>اسم السنتر</span><input name="CenterName" required placeholder="أدخل اسم السنتر" /></label>
+        <label><span>رقم التليفون</span><input name="ContactPhone" required placeholder="أدخل رقم التليفون" /></label>
+        <label><span>المدينة</span><input name="City" required placeholder="أدخل مدينة السنتر" /></label>
+        <label class="full"><span>العنوان</span><input name="Address" required placeholder="أدخل عنوان السنتر" /></label>
+        <button type="submit" class="btn btn-primary submit full"><i class="icon-send"></i> سجل الآن</button>
+      </form>
+
+      <form class="form-grid" id="form-student" style="display:none" asp-controller="StudentLead" asp-action="Register" method="post">
+        <label><span>الاسم</span><input name="Name" required placeholder="أدخل اسمك بالكامل" /></label>
+        <label><span>المرحلة أو المادة المطلوبة</span><input name="InterestedStageOrSubject" required placeholder="مثال: ثالثة ثانوي - رياضيات" /></label>
+        <label><span>رقم التليفون</span><input name="Phone" required placeholder="أدخل رقم التليفون" /></label>
+        <label><span>البريد الإلكتروني اختياري</span><input name="Email" type="email" placeholder="example@email.com" /></label>
+        <button type="submit" class="btn btn-primary submit full"><i class="icon-send"></i> سجل الآن</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="container section">
+  <div class="section-title"><h2>الأسئلة الشائعة</h2><div class="dash"></div></div>
+  <div class="grid grid-2">
+    @for (var i = 0; i < Model.Faqs.Count; i++)
+    {
+      var f = Model.Faqs[i];
+      <div class="faq-item@(i == 0 ? " open" : "")">
+        <button type="button" class="faq-q"><span>@f.Question</span><i class="icon-chevron-down"></i></button>
+        <div class="faq-a">@f.Answer</div>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="container section">
+  <div class="section-title"><h2>فريق العمل</h2><div class="dash"></div></div>
+  <div class="grid grid-6">
+    @foreach (var m in Model.Team)
+    {
+      <div class="member">
+        <div class="avatar"><img src="@m.ImageUrl" alt="@m.Name" loading="lazy" /></div>
+        <p class="n">@m.Name</p><p class="r">@m.Role</p>
+        <div class="soc"><i class="icon-linkedin"></i><i class="icon-twitter"></i></div>
+      </div>
+    }
+  </div>
+</section>

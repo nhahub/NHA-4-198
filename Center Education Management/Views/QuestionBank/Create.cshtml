@@ -1,0 +1,68 @@
+﻿@model Center_Education_Management.Model.QuestionBank
+
+@{
+    ViewData["Title"] = "Create QuestionBank";
+}
+
+<h2>Create QuestionBank</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="TeacherId" class="form-label"></label>
+                        <input asp-for="TeacherId" class="form-control" type="number" />
+                        <span asp-validation-for="TeacherId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="CenterId" class="form-label"></label>
+                        <input asp-for="CenterId" class="form-control" type="number" />
+                        <span asp-validation-for="CenterId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SubjectId" class="form-label"></label>
+                        <input asp-for="SubjectId" class="form-control" type="number" />
+                        <span asp-validation-for="SubjectId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Lesson" class="form-label"></label>
+                        <input asp-for="Lesson" class="form-control" type="text" />
+                        <span asp-validation-for="Lesson" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Type" class="form-label"></label>
+                        <select asp-for="Type" class="form-select">
+                            <option value="MCQ">MCQ</option>
+                            <option value="TrueFalse">TrueFalse</option>
+                            <option value="Essay">Essay</option>
+                        </select>
+                        <span asp-validation-for="Type" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Body" class="form-label"></label>
+                        <input asp-for="Body" class="form-control" type="text" />
+                        <span asp-validation-for="Body" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="OptionsJson" class="form-label"></label>
+                        <input asp-for="OptionsJson" class="form-control" type="text" />
+                        <span asp-validation-for="OptionsJson" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="CorrectAnswer" class="form-label"></label>
+                        <input asp-for="CorrectAnswer" class="form-control" type="text" />
+                        <span asp-validation-for="CorrectAnswer" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Points" class="form-label"></label>
+                        <input asp-for="Points" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="Points" class="text-danger"></span>
+                    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

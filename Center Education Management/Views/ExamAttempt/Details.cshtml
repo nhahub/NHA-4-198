@@ -1,0 +1,33 @@
+﻿@model Center_Education_Management.Model.ExamAttempt
+
+@{
+    ViewData["Title"] = "ExamAttempt Details";
+}
+
+<h2>ExamAttempt Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ExamId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.ExamId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StudentId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StudentId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Status)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StartedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StartedAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SubmittedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.SubmittedAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.TotalPoints)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.TotalPoints)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Percentage)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Percentage)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Score)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Score)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.QuestionBankId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.QuestionBankId)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

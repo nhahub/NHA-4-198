@@ -1,48 +1,94 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Center_Education_Management</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - TeachFlow</title>
+    <meta name="description" content="منصة TeachFlow لإدارة السناتر التعليمية والطلاب والمدرسين والحضور والامتحانات والمدفوعات." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@latest/font/lucide.css" />
+    <link rel="stylesheet" href="~/css/teachflow.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Center_Education_Management.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Center_Education_Management</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+    <header class="nav">
+        <div class="container nav-inner">
+            <a class="logo" asp-controller="Home" asp-action="Index">
+                <div class="logo-box"><i class="icon-graduation-cap"></i></div>
+                <span>TeachFlow</span>
+            </a>
+            <nav class="nav-links">
+                <a asp-controller="Home" asp-action="Index" asp-fragment="top">الرئيسية</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="features">المميزات</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="how">كيف يعمل؟</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="forwho">لمن النظام؟</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="faq">الأسئلة الشائعة</a>
+                <a asp-controller="Dashboard" asp-action="Login">الدخول للداشبورد</a>
+            </nav>
+            <a asp-controller="Home" asp-action="Index" asp-fragment="contact" class="btn btn-primary">ابدأ الآن مجانًا</a>
+        </div>
+    </header>
+
+    @RenderBody()
+
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <div class="logo-box"><i class="icon-graduation-cap"></i></div>
+                    <span>TeachFlow</span>
+                </div>
+                <p>منصة متكاملة لإدارة السناتر التعليمية بكل سهولة وأمان.</p>
+                <div class="socials">
+                    <a href="#" aria-label="Facebook"><i class="icon-facebook"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="icon-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="icon-linkedin"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="icon-instagram"></i></a>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Center_Education_Management - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div>
+                <h4>روابط سريعة</h4>
+                <ul>
+                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="top">الرئيسية</a></li>
+                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="features">المميزات</a></li>
+                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="how">كيف يعمل؟</a></li>
+                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="contact">سجل الآن</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>الخدمات</h4>
+                <ul>
+                    <li><a asp-controller="Student" asp-action="Index">إدارة الطلاب</a></li>
+                    <li><a asp-controller="Teacher" asp-action="Index">إدارة المدرسين</a></li>
+                    <li><a asp-controller="Exam" asp-action="Index">الامتحانات</a></li>
+                    <li><a asp-controller="Payment" asp-action="Index">المدفوعات</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>الدعم</h4>
+                <ul>
+                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="faq">الأسئلة الشائعة</a></li>
+                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="contact">تواصل معنا</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container fb-inner">
+                <p>© 2026 TeachFlow. جميع الحقوق محفوظة.</p>
+                <div class="socials socials-bottom">
+                    <a href="#" aria-label="Facebook"><i class="icon-facebook"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="icon-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="icon-instagram"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="icon-linkedin"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="icon-youtube"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="icon-message-circle"></i></a>
+                </div>
+            </div>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -1,0 +1,23 @@
+﻿@model Center_Education_Management.Model.Enrollment
+
+@{
+    ViewData["Title"] = "Enrollment Details";
+}
+
+<h2>Enrollment Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Status)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StudentId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StudentId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GroupId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GroupId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CenterId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CenterId)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

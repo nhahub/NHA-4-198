@@ -1,0 +1,78 @@
+@model Center_Education_Management.view_models.CreateStudentVM
+
+@{
+    ViewData["Title"] = "Create Student";
+}
+
+<h2>Create Student</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="FirstName" class="form-label"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LastName" class="form-label"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" type="email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Phone" class="form-label"></label>
+        <input asp-for="Phone" class="form-control" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" class="form-control" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CenterId" class="form-label">Center</label>
+        <select asp-for="CenterId" asp-items="ViewBag.Centers" class="form-select">
+            <option value="">Select center</option>
+        </select>
+        <span asp-validation-for="CenterId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StageId" class="form-label">Stage</label>
+        <select asp-for="StageId" asp-items="ViewBag.Stages" class="form-select">
+            <option value="">Select stage</option>
+        </select>
+        <span asp-validation-for="StageId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ParentId" class="form-label">Parent</label>
+        <select asp-for="ParentId" asp-items="ViewBag.Parents" class="form-select">
+            <option value="">Select parent</option>
+        </select>
+        <span asp-validation-for="ParentId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StudentCode" class="form-label"></label>
+        <input asp-for="StudentCode" class="form-control" />
+        <span asp-validation-for="StudentCode" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

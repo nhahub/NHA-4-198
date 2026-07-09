@@ -1,0 +1,62 @@
+﻿@model Center_Education_Management.Model.Attendance
+
+@{
+    ViewData["Title"] = "Edit Attendance";
+}
+
+<h2>Edit Attendance</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Status" class="form-label"></label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                            <option value="Late">Late</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="AttendanceMode" class="form-label"></label>
+                        <select asp-for="AttendanceMode" class="form-select">
+                            <option value="Manual">Manual</option>
+                            <option value="QR_Scan">QR_Scan</option>
+                        </select>
+                        <span asp-validation-for="AttendanceMode" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="RecordedByID" class="form-label"></label>
+                        <input asp-for="RecordedByID" class="form-control" type="number" />
+                        <span asp-validation-for="RecordedByID" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="StudentId" class="form-label"></label>
+                        <input asp-for="StudentId" class="form-control" type="number" />
+                        <span asp-validation-for="StudentId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SessionId" class="form-label"></label>
+                        <input asp-for="SessionId" class="form-control" type="number" />
+                        <span asp-validation-for="SessionId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="QRTokenId" class="form-label"></label>
+                        <input asp-for="QRTokenId" class="form-control" type="number" />
+                        <span asp-validation-for="QRTokenId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="RecordedAt" class="form-label"></label>
+                        <input asp-for="RecordedAt" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="RecordedAt" class="text-danger"></span>
+                    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

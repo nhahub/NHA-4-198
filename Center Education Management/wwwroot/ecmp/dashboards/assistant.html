@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Assistant · ECMP</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../css/style.css"></head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><h2>🧑‍💼 Assistant</h2><small>Support Tools</small></div>
+    <nav class="nav">
+      <a href="#" data-page="overview">📊 <span>Overview</span></a>
+      <a href="#" data-page="sessions">📅 <span>Sessions</span></a>
+      <a href="#" data-page="qr">📱 <span>Generate QR</span></a>
+      <a href="#" data-page="grading">✏️ <span>Grade Exams</span></a>
+      <a href="#" data-page="content">📚 <span>Upload Content</span></a>
+    </nav>
+    <button class="logout">🚪 Logout</button>
+  </aside>
+  <main class="main">
+    <div id="topbarSlot"></div>
+    <div class="content">
+      <section id="page-overview" class="page"><div class="stats" id="stats"></div>
+        <div class="card"><h3>My Permissions</h3><div id="perms"></div></div></section>
+
+      <section id="page-sessions" class="page"><div class="card"><h3>Today's Sessions</h3><div id="sesList"></div></div></section>
+
+      <section id="page-qr" class="page"><div class="card"><h3>Generate QR for Attendance</h3>
+        <div class="field"><label>Select Session</label><select id="qrSes" class="input"></select></div>
+        <button class="btn" id="qrGen">📱 Generate QR Code</button>
+        <div id="qrOut" style="margin-top:18px;text-align:center"></div></div></section>
+
+      <section id="page-grading" class="page"><div class="card"><h3>Grade Exams <button class="btn sm" id="addPaperGrade" style="float:right">+ Add Paper Exam Grade</button></h3>
+        <p style="color:var(--muted);font-size:13px;margin-top:-6px">Review online submissions below, or record a grade manually for an exam taken on paper.</p>
+        <h4 style="margin:18px 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Pending Online Submissions</h4>
+        <div id="gradeList"></div>
+        <h4 style="margin:22px 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Recently Graded</h4>
+        <div id="gradedList"></div>
+      </div></section>
+
+      <section id="page-content" class="page"><div class="card"><h3>Upload Content <button class="btn sm" id="addCont" style="float:right">+ Upload</button></h3>
+        <p style="color:var(--muted);font-size:13px;margin-top:-6px">Upload files from your device or share a link with your assigned groups.</p>
+        <div id="contGrid"></div></div></section>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+const user = Auth.require('assistant');
+document.getElementById('topbarSlot').outerHTML = topbar(user);
+const me = DB.get().assistants.find(a=>a.id===user.id) || {permissions:[]};
+
+function table(cols,rows){ if(!rows.length) return '<p style="color:var(--muted)">No records.</p>';
+  return `<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+function render(){
+  const d = DB.get();
+  const myGroups = d.groups.filter(g=>g.assistantId===user.id);
+  const groupIds = myGroups.map(g=>g.id);
+  const sess = d.sessions.filter(s=>groupIds.includes(s.groupId));
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="lbl">Assigned Groups</div><div class="val">${myGroups.length}</div></div>
+    <div class="stat"><div class="lbl">Sessions</div><div class="val">${sess.length}</div></div>
+    <div class="stat"><div class="lbl">Permissions</div><div class="val">${(me.permissions||[]).length}</div></div>
+  `;
+
+  document.getElementById('perms').innerHTML = ['upload','grade','approve'].map(p=>
+    `<span class="badge ${(me.permissions||[]).includes(p)?'green':'red'}" style="margin-right:6px">${p.toUpperCase()}</span>`).join('');
+
+  document.getElementById('sesList').innerHTML = table(['Group','Date','Time','Status','Actions'],
+    sess.map(s=>{ const g = d.groups.find(x=>x.id===s.groupId);
+      return [g?.name||'—',s.date,`${s.startTime}-${s.endTime}`,`<span class="badge ${s.status==='completed'?'green':'amber'}">${s.status}</span>`,
+        `<button class="btn sm" onclick="genFor(${s.id})">📱 Generate QR</button>`];
+    }));
+
+  // qr select - all sessions of center
+  const sel = document.getElementById('qrSes');
+  sel.innerHTML = sess.map(s=>{ const g = d.groups.find(x=>x.id===s.groupId); return `<option value="${s.id}">${g?.name} - ${s.date} ${s.startTime}</option>`; }).join('') || '<option>No sessions</option>';
+
+  // grading — exams are auto-scored on submission, but still need assistant review/confirmation
+  // (scoped to exams belonging to this assistant's own groups)
+  const myExamIds = d.exams.filter(e=>groupIds.includes(e.groupId)).map(e=>e.id);
+  const examRecs = d.examRecords.filter(r=>myExamIds.includes(r.examId) && !r.reviewed);
+  document.getElementById('gradeList').innerHTML = table(['Student','Exam','Auto Score','Submitted','Actions'],
+    examRecs.map(r=>{ const s = d.students.find(x=>x.id===r.studentId); const e = d.exams.find(x=>x.id===r.examId);
+      return [s?.name||'—', e?.title||'—', `${r.score}/${e?.totalMarks??'—'}`, r.submittedAt||'—', `<button class="btn sm success" onclick="grade(${r.id})">Review</button>`];
+    }));
+
+  const gradedRecs = d.examRecords.filter(r=>myExamIds.includes(r.examId) && r.reviewed).sort((a,b)=>b.id-a.id).slice(0,20);
+  document.getElementById('gradedList').innerHTML = table(['Student','Exam','Score','Source','Date'],
+    gradedRecs.map(r=>{ const s = d.students.find(x=>x.id===r.studentId); const e = d.exams.find(x=>x.id===r.examId);
+      return [s?.name||'—', e?.title||'—', `${r.score}/${e?.totalMarks??'—'}`,
+        `<span class="badge ${r.source==='paper'?'amber':'blue'}">${r.source==='paper'?'📝 Paper':'💻 Online'}</span>`, r.submittedAt||'—'];
+    }));
+
+  document.getElementById('contGrid').innerHTML = contentGrid(
+    d.content.filter(c=>c.uploadedBy===user.id), d.groups, true
+  );
+}
+
+document.getElementById('qrGen').onclick = ()=>{
+  if(!(me.permissions||[]).includes('approve')) return UI.toast('No permission to generate QR','error');
+  const sid = document.getElementById('qrSes').value;
+  const token = 'QR-'+sid+'-'+Date.now();
+  document.getElementById('qrOut').innerHTML = `<div class="qr-box">${makeQR(token)}</div><p><b>Token:</b> ${token}</p>`;
+  UI.toast('QR generated');
+};
+
+window.genFor = (id)=>{ document.querySelector('[data-page="qr"]').click(); setTimeout(()=>{ document.getElementById('qrSes').value=id; document.getElementById('qrGen').click(); },100); };
+window.grade = (id)=>{
+  if(!(me.permissions||[]).includes('grade')) return UI.toast('No grading permission','error');
+  const d0 = DB.get(); const rec = d0.examRecords.find(x=>x.id===id);
+  UI.modal('Review Submission',`<p style="color:var(--muted);font-size:13px">Auto-computed score is pre-filled — adjust it if needed, then confirm.</p><div class="field"><label>Score</label><input class="input" id="sc" type="number" value="${rec?.score ?? 0}"></div>`, m=>{
+    const d = DB.get(); const r = d.examRecords.find(x=>x.id===id); r.score = +m.querySelector('#sc').value; r.reviewed = true; DB.commit(); UI.toast('Reviewed'); render();
+  });
+};
+
+document.getElementById('addCont').onclick = ()=>{
+  if(!(me.permissions||[]).includes('upload')) return UI.toast('No upload permission','error');
+  const d = DB.get();
+  const myGroups = d.groups.filter(g=>g.assistantId===user.id);
+  openContentUploadModal(myGroups, user.id, entry=>{
+    d.content.push(entry);
+    DB.commit(); UI.toast('Uploaded'); render();
+  });
+};
+
+document.getElementById('addPaperGrade').onclick = ()=>{
+  if(!(me.permissions||[]).includes('grade')) return UI.toast('No grading permission','error');
+  const d = DB.get();
+  const myGroups = d.groups.filter(g=>g.assistantId===user.id);
+  if(!myGroups.length) return UI.toast('No assigned groups','error');
+  const gOpt = myGroups.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+
+  const bg = UI.modal('Add Paper Exam Grade', `
+    <p style="color:var(--muted);font-size:13px">Use this for exams taken on paper (offline) to record the grade on the platform.</p>
+    <div class="field"><label>Group</label><select id="pg-group">${gOpt}</select></div>
+    <div class="field"><label>Exam</label><select id="pg-exam"></select></div>
+    <div class="field"><label>Student</label><select id="pg-student"></select></div>
+    <div class="field"><label>Score</label><input class="input" id="pg-score" type="number" min="0" placeholder="e.g. 42"></div>
+  `, m=>{
+    const groupId = +m.querySelector('#pg-group').value;
+    const examId = +m.querySelector('#pg-exam').value;
+    const studentId = +m.querySelector('#pg-student').value;
+    const score = m.querySelector('#pg-score').value;
+    if(!groupId || !examId || !studentId){ UI.toast('Please complete all fields','error'); return false; }
+    if(score === ''){ UI.toast('Please enter a score','error'); return false; }
+    const d2 = DB.get();
+    let rec = d2.examRecords.find(r=>r.examId===examId && r.studentId===studentId);
+    if(rec){
+      rec.score = +score; rec.graded = true; rec.reviewed = true; rec.source = 'paper';
+    } else {
+      d2.examRecords.push({id:Date.now(), examId, studentId, score:+score, answers:{}, graded:true, reviewed:true, source:'paper', submittedAt:new Date().toLocaleString()});
+    }
+    DB.commit(); UI.toast('Grade saved'); render();
+  });
+
+  const groupSel = bg.querySelector('#pg-group');
+  const examSel = bg.querySelector('#pg-exam');
+  const studentSel = bg.querySelector('#pg-student');
+  const refresh = ()=>{
+    const gid = +groupSel.value;
+    const exams = d.exams.filter(e=>e.groupId===gid);
+    examSel.innerHTML = exams.map(e=>`<option value="${e.id}">${e.title}</option>`).join('') || '<option value="">No exams in this group</option>';
+    const studs = d.students.filter(s=>s.groupIds && s.groupIds.includes(gid));
+    studentSel.innerHTML = studs.map(s=>`<option value="${s.id}">${s.name}</option>`).join('') || '<option value="">No students in this group</option>';
+  };
+  groupSel.onchange = refresh;
+  refresh();
+};
+
+setupNav();
+render();
+</script>
+</body></html>

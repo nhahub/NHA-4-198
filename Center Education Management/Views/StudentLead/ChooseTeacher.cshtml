@@ -1,0 +1,47 @@
+@using Center_Education_Management.Model
+@using Center_Education_Management.view_models
+@model StudentLeadFinalVM
+@{
+    ViewData["Title"] = "اختر المدرس";
+    var teachers = ViewBag.Teachers as List<Teacher> ?? new List<Teacher>();
+    var centerName = ViewBag.CenterName as string;
+}
+
+<section class="container section">
+  <div class="section-title"><h2>المدرسون في @centerName</h2><div class="dash"></div></div>
+
+  <div class="contact-card" style="max-width:640px;margin:0 auto">
+    <div class="contact-right" style="grid-column:1/-1">
+      <div asp-validation-summary="All" style="color:#c0392b;margin-bottom:14px"></div>
+
+      <form asp-controller="StudentLead" asp-action="ChooseTeacher" method="post">
+        <input type="hidden" asp-for="Name" />
+        <input type="hidden" asp-for="Phone" />
+        <input type="hidden" asp-for="Email" />
+        <input type="hidden" asp-for="Grade" />
+        <input type="hidden" asp-for="CenterId" />
+
+        @if (!teachers.Any())
+        {
+          <p style="text-align:center;color:var(--muted)">لا يوجد مدرسون مسجلون في هذا السنتر حاليًا</p>
+        }
+        else
+        {
+          @foreach (var t in teachers)
+          {
+            <label class="teacher-item" style="cursor:pointer">
+              <input type="radio" name="TeacherId" value="@t.Id" required class="tc-radio" />
+              <div class="tc-ico"><i class="icon-user-cog"></i></div>
+              <div class="tc-body">
+                <p class="tc-name">@t.FirstName @t.LastName</p>
+                <p class="tc-meta"><i class="icon-book-marked"></i> @t.Subject?.Name</p>
+              </div>
+            </label>
+          }
+        }
+
+        <button type="submit" id="teacher-submit" class="btn btn-primary submit full"><i class="icon-send"></i> سجل الآن</button>
+      </form>
+    </div>
+  </div>
+</section>

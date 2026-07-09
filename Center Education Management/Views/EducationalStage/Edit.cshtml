@@ -1,0 +1,45 @@
+﻿@model Center_Education_Management.Model.EducationalStage
+
+@{
+    ViewData["Title"] = "Edit EducationalStage";
+}
+
+<h2>Edit EducationalStage</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" type="text" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="LevelNumber" class="form-label"></label>
+                        <input asp-for="LevelNumber" class="form-control" type="number" />
+                        <span asp-validation-for="LevelNumber" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="DisplayName" class="form-label"></label>
+                        <input asp-for="DisplayName" class="form-control" type="text" />
+                        <span asp-validation-for="DisplayName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="EducationSystem" class="form-label"></label>
+                        <input asp-for="EducationSystem" class="form-control" type="text" />
+                        <span asp-validation-for="EducationSystem" class="text-danger"></span>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                        <label asp-for="IsActive" class="form-label"></label>
+                        <span asp-validation-for="IsActive" class="text-danger"></span>
+                    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

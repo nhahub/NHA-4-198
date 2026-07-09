@@ -1,4 +1,4 @@
-﻿using Center_Education_Management.Models;
+﻿using Center_Education_Management.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;

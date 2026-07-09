@@ -13,7 +13,9 @@ namespace Center_Education_Management.view_models
     {
         [Required]
         [StringLength(100)]
-        public string? FullName { get; set; }
+        public string? FirstName { get; set; }
+
+        public string? LastName { get; set; }
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -26,6 +28,8 @@ namespace Center_Education_Management.view_models
         public int CenterId { get; set; }
         [Required]
         public int StageId { get; set; }
+        [Required]
+        public int ParentId { get; set; }
         public string? StudentCode { get; set; }
     }
     public class UpdateStudentVM
@@ -40,7 +44,9 @@ namespace Center_Education_Management.view_models
     public class StudentDetailsVM
     {
         public int Id { get; set; }
-        public string? FullName { get; set; }
+        public string? FirstName { get; set; }
+
+        public string? LastName { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public string? CenterName { get; set; }
@@ -52,7 +58,11 @@ namespace Center_Education_Management.view_models
     public class StudentListVM
     {
         public int Id { get; set; }
-        public string? FullName { get; set; }
+        public string? FirstName { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string? LastName { get; set; }
         public StudentStatus Status { get; set; }
         public string? StageName { get; set; }
     }

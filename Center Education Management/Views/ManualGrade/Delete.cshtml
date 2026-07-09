@@ -1,0 +1,34 @@
+﻿@model Center_Education_Management.Model.ManualGrade
+
+@{
+    ViewData["Title"] = "Delete ManualGrade";
+}
+
+<h2>Delete ManualGrade</h2>
+
+<div class="alert alert-danger">Are you sure you want to delete this item?</div>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StudentId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StudentId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.RecordedById)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.RecordedById)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GroupId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GroupId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SubjectId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.SubjectId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Points)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Points)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Notes)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Notes)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GradedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GradedAt)</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

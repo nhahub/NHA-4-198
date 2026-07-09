@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Parent · ECMP</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../css/style.css"></head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><h2>👪 Parent</h2><small>Family Portal</small></div>
+    <nav class="nav">
+      <a href="#" data-page="overview">📊 <span>Overview</span></a>
+      <a href="#" data-page="attendance">✅ <span>Attendance</span></a>
+      <a href="#" data-page="performance">📈 <span>Performance</span></a>
+      <a href="#" data-page="schedule">📅 <span>Schedule</span></a>
+      <a href="#" data-page="payments">💳 <span>Payments</span></a>
+    </nav>
+    <button class="logout">🚪 Logout</button>
+  </aside>
+  <main class="main">
+    <div id="topbarSlot"></div>
+    <div class="content">
+      <section id="page-overview" class="page"><div class="stats" id="stats"></div>
+        <div class="card"><h3>About <span id="cn"></span></h3><div id="info"></div></div></section>
+      <section id="page-attendance" class="page"><div class="card"><h3>Attendance</h3><div id="att"></div></div></section>
+      <section id="page-performance" class="page"><div class="card"><h3>Exam Results</h3><div id="perf"></div></div></section>
+      <section id="page-schedule" class="page"><div class="card"><h3>Upcoming Sessions</h3><div id="sch"></div></div></section>
+      <section id="page-payments" class="page"><div class="card"><h3>Payments</h3><div id="pay"></div>
+        <button class="btn" id="payBtn" style="margin-top:10px">💳 Pay Now</button></div></section>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+const user = Auth.require('parent');
+document.getElementById('topbarSlot').outerHTML = topbar(user);
+
+function table(cols,rows){ if(!rows.length) return '<p style="color:var(--muted)">No records.</p>';
+  return `<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+function render(){
+  const d = DB.get();
+  const child = d.students.find(s=>s.id===user.childId) || d.students[0];
+  if(!child){ document.getElementById('info').innerHTML='<p>No child linked.</p>'; return; }
+  const groupIds = child.groupIds||[];
+  const myGroups = d.groups.filter(g=>groupIds.includes(g.id));
+  const sess = d.sessions.filter(s=>groupIds.includes(s.groupId));
+  const att = d.attendance.filter(a=>a.studentId===child.id);
+  const recs = d.examRecords.filter(r=>r.studentId===child.id);
+  const pays = d.payments.filter(p=>p.studentId===child.id);
+
+  document.getElementById('cn').textContent = child.name;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="lbl">Groups</div><div class="val">${myGroups.length}</div></div>
+    <div class="stat"><div class="lbl">Attendance %</div><div class="val">${sess.length?Math.round(att.length/sess.length*100):0}%</div></div>
+    <div class="stat"><div class="lbl">Avg Score</div><div class="val">${recs.length?Math.round(recs.reduce((s,r)=>s+r.score,0)/recs.length):0}</div></div>
+    <div class="stat"><div class="lbl">Pending Fees</div><div class="val">${pays.filter(p=>p.status==='pending').length}</div></div>
+  `;
+  document.getElementById('info').innerHTML = `<p><b>Stage:</b> ${child.stage}</p><p><b>Phone:</b> ${child.phone}</p><p><b>Groups:</b> ${myGroups.map(g=>g.name).join(', ')||'—'}</p>`;
+  document.getElementById('att').innerHTML = table(['Session','Date','Status'], att.map(a=>{ const s = d.sessions.find(x=>x.id===a.sessionId); const g = s?d.groups.find(x=>x.id===s.groupId):null; return [g?.name||'—',s?.date||'—','<span class="badge green">Present</span>']; }));
+  document.getElementById('perf').innerHTML = table(['Exam','Score','Status'], recs.map(r=>{ const e = d.exams.find(x=>x.id===r.examId); return [e?.title||'—',`${r.score}/${e?.totalMarks||'-'}`, `<span class="badge ${r.score>=(e?.passingMarks||0)?'green':'red'}">${r.score>=(e?.passingMarks||0)?'Passed':'Failed'}</span>`]; }));
+  document.getElementById('sch').innerHTML = table(['Group','Date','Time'], sess.filter(s=>s.status==='scheduled').map(s=>{ const g = d.groups.find(x=>x.id===s.groupId); return [g?.name||'—',s.date,`${s.startTime}-${s.endTime}`]; }));
+  document.getElementById('pay').innerHTML = table(['Type','Amount','Status','Date','Action'], pays.map(p=>[p.type,'EGP '+p.amount,`<span class="badge ${p.status==='paid'?'green':'amber'}">${p.status}</span>`,p.date, p.status==='pending'?`<button class="btn sm success" onclick="payOne(${p.id})">Pay</button>`:'-']));
+}
+window.payOne = (id)=>{ const d = DB.get(); const p = d.payments.find(x=>x.id===id); p.status='paid'; DB.commit(); UI.toast('Payment successful'); render(); };
+document.getElementById('payBtn').onclick = ()=> UI.toast('Payment gateway opened');
+
+setupNav();
+render();
+</script>
+</body></html>

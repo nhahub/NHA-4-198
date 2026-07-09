@@ -1,0 +1,39 @@
+@model Center_Education_Management.view_models.UpdateStudentVM
+
+@{
+    ViewData["Title"] = "Edit Student";
+}
+
+<h2>Edit Student</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="StageId" class="form-label">Stage</label>
+        <select asp-for="StageId" asp-items="ViewBag.Stages" class="form-select">
+            <option value="">Select stage</option>
+        </select>
+        <span asp-validation-for="StageId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StudentCode" class="form-label"></label>
+        <input asp-for="StudentCode" class="form-control" />
+        <span asp-validation-for="StudentCode" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" asp-items="Html.GetEnumSelectList<Center_Education_Management.Enums.StudentStatus>()" class="form-select"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

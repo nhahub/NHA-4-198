@@ -1,0 +1,73 @@
+﻿@model Center_Education_Management.Model.ExamAttempt
+
+@{
+    ViewData["Title"] = "Edit ExamAttempt";
+}
+
+<h2>Edit ExamAttempt</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="ExamId" class="form-label"></label>
+                        <input asp-for="ExamId" class="form-control" type="number" />
+                        <span asp-validation-for="ExamId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="StudentId" class="form-label"></label>
+                        <input asp-for="StudentId" class="form-control" type="number" />
+                        <span asp-validation-for="StudentId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Status" class="form-label"></label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="NotStarted">NotStarted</option>
+                            <option value="InProgress">InProgress</option>
+                            <option value="Submitted">Submitted</option>
+                            <option value="AutoGraded">AutoGraded</option>
+                            <option value="ManuallyGraded">ManuallyGraded</option>
+                            <option value="Expired">Expired</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="StartedAt" class="form-label"></label>
+                        <input asp-for="StartedAt" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="StartedAt" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SubmittedAt" class="form-label"></label>
+                        <input asp-for="SubmittedAt" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="SubmittedAt" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="TotalPoints" class="form-label"></label>
+                        <input asp-for="TotalPoints" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="TotalPoints" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Percentage" class="form-label"></label>
+                        <input asp-for="Percentage" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="Percentage" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Score" class="form-label"></label>
+                        <input asp-for="Score" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="Score" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="QuestionBankId" class="form-label"></label>
+                        <input asp-for="QuestionBankId" class="form-control" type="number" />
+                        <span asp-validation-for="QuestionBankId" class="text-danger"></span>
+                    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

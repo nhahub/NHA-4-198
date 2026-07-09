@@ -1,0 +1,78 @@
+﻿@model Center_Education_Management.Model.Content
+
+@{
+    ViewData["Title"] = "Edit Content";
+}
+
+<h2>Edit Content</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="TeacherId" class="form-label"></label>
+                        <input asp-for="TeacherId" class="form-control" type="number" />
+                        <span asp-validation-for="TeacherId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="GroupId" class="form-label"></label>
+                        <input asp-for="GroupId" class="form-control" type="number" />
+                        <span asp-validation-for="GroupId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SessionId" class="form-label"></label>
+                        <input asp-for="SessionId" class="form-control" type="number" />
+                        <span asp-validation-for="SessionId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="UploadedByID" class="form-label"></label>
+                        <input asp-for="UploadedByID" class="form-control" type="number" />
+                        <span asp-validation-for="UploadedByID" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Type" class="form-label"></label>
+                        <select asp-for="Type" class="form-select">
+                            <option value="Video">Video</option>
+                            <option value="Pdf">Pdf</option>
+                            <option value="Image">Image</option>
+                            <option value="DriveLink">DriveLink</option>
+                        </select>
+                        <span asp-validation-for="Type" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" type="text" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Url" class="form-label"></label>
+                        <input asp-for="Url" class="form-control" type="text" />
+                        <span asp-validation-for="Url" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SizeBytes" class="form-label"></label>
+                        <input asp-for="SizeBytes" class="form-control" type="number" />
+                        <span asp-validation-for="SizeBytes" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Visibility" class="form-label"></label>
+                        <select asp-for="Visibility" class="form-select">
+                            <option value="Hidden">Hidden</option>
+                            <option value="Visible">Visible</option>
+                        </select>
+                        <span asp-validation-for="Visibility" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="CreatedAt" class="form-label"></label>
+                        <input asp-for="CreatedAt" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

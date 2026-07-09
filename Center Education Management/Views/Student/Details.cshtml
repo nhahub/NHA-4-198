@@ -1,0 +1,39 @@
+@model Center_Education_Management.view_models.StudentDetailsVM
+
+@{
+    ViewData["Title"] = "Student Details";
+}
+
+<h2>Student Details</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Id</dt>
+    <dd class="col-sm-9">@Model.Id</dd>
+
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">@($"{Model.FirstName} {Model.LastName}".Trim())</dd>
+
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+
+    <dt class="col-sm-3">Phone</dt>
+    <dd class="col-sm-9">@Model.Phone</dd>
+
+    <dt class="col-sm-3">Center</dt>
+    <dd class="col-sm-9">@Model.CenterName</dd>
+
+    <dt class="col-sm-3">Stage</dt>
+    <dd class="col-sm-9">@Model.StageName</dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+
+    <dt class="col-sm-3">Blocked Reason</dt>
+    <dd class="col-sm-9">@Model.BlockedReason</dd>
+
+    <dt class="col-sm-3">Joined At</dt>
+    <dd class="col-sm-9">@Model.JoinedAt</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

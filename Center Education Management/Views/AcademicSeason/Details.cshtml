@@ -1,0 +1,29 @@
+﻿@model Center_Education_Management.Model.AcademicSeason
+
+@{
+    ViewData["Title"] = "AcademicSeason Details";
+}
+
+<h2>AcademicSeason Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CenterId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CenterId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Name)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Name)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Type)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Type)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StartsAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StartsAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.EndsAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.EndsAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Status)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.IsCurrent)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.IsCurrent)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

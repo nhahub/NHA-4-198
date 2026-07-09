@@ -1,0 +1,53 @@
+﻿@model Center_Education_Management.Model.TeacherAssistant
+
+@{
+    ViewData["Title"] = "TeacherAssistant Details";
+}
+
+<h2>TeacherAssistant Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.NationalID)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.NationalID)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.FirstName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.FirstName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.LastName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.LastName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Email)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Email)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.PasswordHash)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.PasswordHash)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Phone)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Phone)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.AvatarUrl)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.AvatarUrl)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.IsActive)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.IsActive)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.EmailVerified)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.EmailVerified)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Salary)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Salary)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.LastLoginAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.LastLoginAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CreatedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CreatedAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.UpdatedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.UpdatedAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.TeacherId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.TeacherId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CenterId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CenterId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CanUpload)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CanUpload)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CanGrade)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CanGrade)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CanApproveRequests)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CanApproveRequests)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.JoinedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.JoinedAt)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Center Admin · ECMP</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../css/style.css"></head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><h2>🛠️ Center Admin</h2><small>Operations</small></div>
+    <nav class="nav">
+      <a href="#" data-page="overview">📊 <span>Overview</span></a>
+      <a href="#" data-page="teachers">👨‍🏫 <span>Teachers</span></a>
+      <a href="#" data-page="assistants">🧑‍💼 <span>Assistants</span></a>
+      <a href="#" data-page="groups">👥 <span>Groups</span></a>
+      <a href="#" data-page="students">🎒 <span>Students</span></a>
+      <a href="#" data-page="leads">📋 <span>Student Leads</span></a>
+      <a href="#" data-page="sessions">📅 <span>Sessions</span></a>
+      <a href="#" data-page="payments">💰 <span>Payments</span></a>
+    </nav>
+    <button class="logout">🚪 Logout</button>
+  </aside>
+  <main class="main">
+    <div id="topbarSlot"></div>
+    <div class="content">
+      <section id="page-overview" class="page"><div class="stats" id="stats"></div>
+        <div class="card"><h3>Today's Sessions</h3><div id="todaySes"></div></div></section>
+
+      <section id="page-teachers" class="page"><div class="card"><h3>Teachers <button class="btn sm" id="addT" style="float:right">+ Add Teacher</button></h3><div id="tT"></div></div></section>
+      <section id="page-assistants" class="page"><div class="card"><h3>Assistants <button class="btn sm" id="addA" style="float:right">+ Add Assistant</button></h3><div id="tA"></div></div></section>
+      <section id="page-groups" class="page"><div class="card"><h3>Groups <button class="btn sm" id="addG" style="float:right">+ Create Group</button></h3><div id="tG"></div></div></section>
+      <section id="page-students" class="page"><div class="card"><h3>Students <button class="btn sm" id="addS" style="float:right">+ Enroll Student</button></h3><div id="tS"></div></div></section>
+      <section id="page-leads" class="page"><div class="card"><h3>Student Leads <button class="btn sm" id="addL" style="float:right">+ Add Lead</button></h3><div id="tL"></div></div></section>
+      <section id="page-sessions" class="page"><div class="card"><h3>All Sessions <button class="btn sm" id="addSes" style="float:right">+ Schedule Session</button></h3><div id="tSes"></div></div></section>
+      <section id="page-payments" class="page"><div class="card"><h3>Payments <button class="btn sm" id="addPay" style="float:right">+ Record Payment</button></h3><div id="tP"></div></div></section>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+const user = Auth.require('center_admin');
+document.getElementById('topbarSlot').outerHTML = topbar(user);
+const cid = user.centerId;
+
+function table(cols,rows){
+  if(!rows.length) return '<p style="color:var(--muted)">No records.</p>';
+  return `<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+function render(){
+  const d = DB.get();
+  const teachers = d.teachers.filter(t=>t.centerId===cid);
+  const assistants = d.assistants.filter(a=>a.centerId===cid);
+  const groups = d.groups.filter(g=>g.centerId===cid);
+  const students = d.students.filter(s=>s.centerId===cid);
+  const leads = d.studentLeads.filter(l=>l.centerId===cid);
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="lbl">Teachers</div><div class="val">${teachers.length}</div></div>
+    <div class="stat"><div class="lbl">Students</div><div class="val">${students.length}</div></div>
+    <div class="stat"><div class="lbl">Groups</div><div class="val">${groups.length}</div></div>
+    <div class="stat"><div class="lbl">Sessions Today</div><div class="val">${d.sessions.filter(s=>s.date===new Date().toISOString().slice(0,10)).length}</div></div>
+    <div class="stat"><div class="lbl">Pending Payments</div><div class="val">${d.payments.filter(p=>p.status==='pending').length}</div></div>
+  `;
+  document.getElementById('todaySes').innerHTML = table(['Group','Time','Status'], d.sessions.map(s=>{
+    const g = d.groups.find(x=>x.id===s.groupId);
+    return [g?.name||'—', `${s.date} ${s.startTime}-${s.endTime}`, `<span class="badge ${s.status==='completed'?'green':'amber'}">${s.status}</span>`];
+  }));
+
+  document.getElementById('tT').innerHTML = table(['Name','Subject','Email','Phone','Actions'],
+    teachers.map(t=>[t.name,t.subject,t.email,t.phone,
+      `<button class="btn sm" onclick="editTeacher(${t.id})">Edit</button>
+       <button class="btn sm danger" onclick="delT(${t.id})">Delete</button>`]));
+
+  document.getElementById('tA').innerHTML = table(['Name','Email','Phone','Permissions','Actions'],
+    assistants.map(a=>[a.name,a.email,a.phone,(a.permissions||[]).join(', ')||'<span style="color:var(--muted)">none</span>',
+      `<button class="btn sm" onclick="editPerms(${a.id})">Edit Permissions</button>
+       <button class="btn sm danger" onclick="delA(${a.id})">Remove</button>`]));
+
+  document.getElementById('tG').innerHTML = table(['Name','Subject','Teacher','Schedule','Capacity','Actions'],
+    groups.map(g=>{ const t = d.teachers.find(x=>x.id===g.teacherId);
+      return [g.name,g.subject,t?.name||'—',g.schedule,g.capacity,
+        `<button class="btn sm" onclick="viewG(${g.id})">View</button>
+         <button class="btn sm danger" onclick="delG(${g.id})">Delete</button>`];
+    }));
+
+  document.getElementById('tS').innerHTML = table(['Name','Stage','Subject','Phone','Parent Phone','Groups','Actions'],
+    students.map(s=>[s.name,s.stage,s.subject||'—',s.phone,s.parentPhone,(s.groupIds||[]).length,
+      `<button class="btn sm" onclick="assignG(${s.id})">Assign Group</button>
+       <button class="btn sm danger" onclick="delS(${s.id})">Remove</button>`]));
+
+  document.getElementById('tL').innerHTML = table(['Name','Phone','Stage','Subject','Status','Actions'],
+    leads.map(l=>[l.name,l.phone,l.stage,l.subject,`<span class="badge amber">${l.status}</span>`,
+      `<button class="btn sm success" onclick="convertLead(${l.id})">Convert</button>
+       <button class="btn sm danger" onclick="delL(${l.id})">Delete</button>`]));
+
+  document.getElementById('tSes').innerHTML = table(['Group','Date','Time','Status','Actions'],
+    d.sessions.map(s=>{ const g = d.groups.find(x=>x.id===s.groupId);
+      return [g?.name||'—',s.date,`${s.startTime}-${s.endTime}`,`<span class="badge ${s.status==='completed'?'green':'amber'}">${s.status}</span>`,
+        `<button class="btn sm danger" onclick="delSes(${s.id})">Cancel</button>`];
+    }));
+
+  document.getElementById('tP').innerHTML = table(['Student','Type','Amount','Status','Date','Actions'],
+    d.payments.map(p=>{ const s = d.students.find(x=>x.id===p.studentId);
+      return [s?.name||'—',p.type,'EGP '+p.amount,`<span class="badge ${p.status==='paid'?'green':'amber'}">${p.status}</span>`,p.date,
+        p.status==='pending'?`<button class="btn sm success" onclick="markPaid(${p.id})">Mark Paid</button>`:'-'];
+    }));
+}
+
+document.getElementById('addT').onclick = ()=> UI.modal('Add Teacher',`
+  <div class="field"><label>Name</label><input class="input" id="n"></div>
+  <div class="field"><label>Subject</label><input class="input" id="s"></div>
+  <div class="field"><label>Email</label><input class="input" id="e"></div>
+  <div class="field"><label>Phone</label><input class="input" id="p"></div>`, m=>{
+  const d = DB.get(); const id = Date.now();
+  d.teachers.push({id,name:m.querySelector('#n').value,subject:m.querySelector('#s').value,email:m.querySelector('#e').value,phone:m.querySelector('#p').value,centerId:cid});
+  d.users.push({id,role:'teacher',name:m.querySelector('#n').value,email:m.querySelector('#e').value,password:'123',centerId:cid});
+  DB.commit(); UI.toast('Teacher added'); render();
+});
+
+document.getElementById('addA').onclick = ()=> UI.modal('Add Assistant',`
+  <div class="field"><label>Name</label><input class="input" id="n"></div>
+  <div class="field"><label>Email</label><input class="input" id="e"></div>
+  <div class="field"><label>Phone</label><input class="input" id="p"></div>
+  <label style="color:var(--muted);font-size:13px">Permissions:</label>
+  <div class="grid-2" style="margin-top:6px">
+    <label class="check"><input type="checkbox" id="up"> Upload Content</label>
+    <label class="check"><input type="checkbox" id="gr"> Grade Exams</label>
+    <label class="check"><input type="checkbox" id="ap"> Approve Attendance</label>
+  </div>`, m=>{
+  const d = DB.get(); const id = Date.now();
+  const perms = [];
+  if(m.querySelector('#up').checked) perms.push('upload');
+  if(m.querySelector('#gr').checked) perms.push('grade');
+  if(m.querySelector('#ap').checked) perms.push('approve');
+  d.assistants.push({id,name:m.querySelector('#n').value,email:m.querySelector('#e').value,phone:m.querySelector('#p').value,centerId:cid,permissions:perms});
+  d.users.push({id,role:'assistant',name:m.querySelector('#n').value,email:m.querySelector('#e').value,password:'123',centerId:cid});
+  DB.commit(); UI.toast('Assistant added'); render();
+});
+
+document.getElementById('addG').onclick = ()=>{
+  const d = DB.get();
+  const tOpt = d.teachers.filter(t=>t.centerId===cid).map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  const aOpt = '<option value="">— None —</option>'+d.assistants.filter(a=>a.centerId===cid).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  UI.modal('Create Group',`
+    <div class="field"><label>Group Name</label><input class="input" id="n"></div>
+    <div class="field"><label>Subject</label><input class="input" id="s"></div>
+    <div class="field"><label>Stage</label><input class="input" id="st"></div>
+    <div class="field"><label>Teacher</label><select id="te">${tOpt}</select></div>
+    <div class="field"><label>Assistant</label><select id="as">${aOpt}</select></div>
+    <div class="field"><label>Classroom</label><input class="input" id="cl"></div>
+    <div class="field"><label>Schedule</label><input class="input" id="sc" placeholder="Sun/Tue 4-6 PM"></div>
+    <div class="field"><label>Capacity</label><input class="input" id="cap" type="number" value="20"></div>`, m=>{
+    d.groups.push({id:Date.now(),name:m.querySelector('#n').value,subject:m.querySelector('#s').value,stage:m.querySelector('#st').value,teacherId:+m.querySelector('#te').value,assistantId:+m.querySelector('#as').value||null,classroom:m.querySelector('#cl').value,schedule:m.querySelector('#sc').value,capacity:+m.querySelector('#cap').value,centerId:cid});
+    DB.commit(); UI.toast('Group created'); render();
+  });
+};
+
+document.getElementById('addS').onclick = ()=>{
+  const d0 = DB.get();
+  const subjects = [...new Set(d0.teachers.filter(t=>t.centerId===cid).map(t=>t.subject))];
+  const subOpt = subjects.map(s=>`<option>${s}</option>`).join('') || '<option>Mathematics</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>English</option><option>Arabic</option>';
+  UI.modal('Enroll Student',`
+    <div class="field"><label>Name</label><input class="input" id="n"></div>
+    <div class="field"><label>Email</label><input class="input" id="e"></div>
+    <div class="field"><label>Phone</label><input class="input" id="p"></div>
+    <div class="grid-2">
+      <div class="field"><label>Stage</label><input class="input" id="st" placeholder="Secondary 3"></div>
+      <div class="field"><label>Subject / Material</label><select id="sub">${subOpt}</select></div>
+    </div>
+    <div class="field"><label>Parent Phone</label><input class="input" id="pp"></div>`, m=>{
+    const d = DB.get(); const id = Date.now();
+    d.students.push({id,name:m.querySelector('#n').value,email:m.querySelector('#e').value,phone:m.querySelector('#p').value,stage:m.querySelector('#st').value,subject:m.querySelector('#sub').value,parentPhone:m.querySelector('#pp').value,centerId:cid,groupIds:[]});
+    d.users.push({id,role:'student',name:m.querySelector('#n').value,email:m.querySelector('#e').value,password:'123',centerId:cid});
+    d.users.push({id:id+1,role:'parent',name:'Parent of '+m.querySelector('#n').value,email:'p'+id+'@parent.com',password:'123',centerId:cid,childId:id});
+    DB.commit(); UI.toast('Student enrolled. Parent SMS sent.'); render();
+  });
+};
+
+document.getElementById('addL').onclick = ()=> UI.modal('Add Student Lead',`
+  <div class="field"><label>Name</label><input class="input" id="n"></div>
+  <div class="field"><label>Phone</label><input class="input" id="p"></div>
+  <div class="field"><label>Stage</label><input class="input" id="st"></div>
+  <div class="field"><label>Subject</label><input class="input" id="su"></div>`, m=>{
+  const d = DB.get();
+  d.studentLeads.push({id:Date.now(),name:m.querySelector('#n').value,phone:m.querySelector('#p').value,stage:m.querySelector('#st').value,subject:m.querySelector('#su').value,status:'new',centerId:cid});
+  DB.commit(); UI.toast('Lead added'); render();
+});
+
+document.getElementById('addSes').onclick = ()=>{
+  const d = DB.get();
+  const gOpt = d.groups.filter(g=>g.centerId===cid).map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+  UI.modal('Schedule Session',`
+    <div class="field"><label>Group</label><select id="g">${gOpt}</select></div>
+    <div class="field"><label>Date</label><input class="input" id="dt" type="date"></div>
+    <div class="grid-2"><div class="field"><label>Start</label><input class="input" id="st" type="time"></div>
+    <div class="field"><label>End</label><input class="input" id="en" type="time"></div></div>`, m=>{
+    d.sessions.push({id:Date.now(),groupId:+m.querySelector('#g').value,date:m.querySelector('#dt').value,startTime:m.querySelector('#st').value,endTime:m.querySelector('#en').value,status:'scheduled'});
+    DB.commit(); UI.toast('Session scheduled'); render();
+  });
+};
+
+document.getElementById('addPay').onclick = ()=>{
+  const d = DB.get();
+  const sOpt = d.students.filter(s=>s.centerId===cid).map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  UI.modal('Record Payment',`
+    <div class="field"><label>Student</label><select id="s">${sOpt}</select></div>
+    <div class="field"><label>Type</label><input class="input" id="t" value="Monthly Fee"></div>
+    <div class="field"><label>Amount</label><input class="input" id="a" type="number" value="500"></div>`, m=>{
+    d.payments.push({id:Date.now(),studentId:+m.querySelector('#s').value,type:m.querySelector('#t').value,amount:+m.querySelector('#a').value,status:'paid',date:new Date().toISOString().slice(0,10)});
+    DB.commit(); UI.toast('Payment recorded'); render();
+  });
+};
+
+window.editTeacher = (id)=>{ const t = DB.get().teachers.find(x=>x.id===id); UI.modal('Edit Teacher',`<div class="field"><label>Subject</label><input class="input" id="s" value="${t.subject}"></div>`, m=>{ t.subject = m.querySelector('#s').value; DB.commit(); UI.toast('Updated'); render(); }); };
+window.delT = id=> UI.confirm('Delete?', ()=>{ const d = DB.get(); d.teachers = d.teachers.filter(x=>x.id!==id); DB.commit(); render(); });
+window.delA = id=> UI.confirm('Remove?', ()=>{ const d = DB.get(); d.assistants = d.assistants.filter(x=>x.id!==id); DB.commit(); render(); });
+window.editPerms = (id)=>{
+  const d = DB.get(); const a = d.assistants.find(x=>x.id===id);
+  const has = a.permissions || [];
+  UI.modal('Edit Permissions for '+a.name, `
+    <div class="grid-2" style="margin-top:6px">
+      <label class="check"><input type="checkbox" id="up" ${has.includes('upload')?'checked':''}> Upload Content</label>
+      <label class="check"><input type="checkbox" id="gr" ${has.includes('grade')?'checked':''}> Grade Exams</label>
+      <label class="check"><input type="checkbox" id="ap" ${has.includes('approve')?'checked':''}> Approve Attendance / Generate QR</label>
+    </div>`, m=>{
+    const perms = [];
+    if(m.querySelector('#up').checked) perms.push('upload');
+    if(m.querySelector('#gr').checked) perms.push('grade');
+    if(m.querySelector('#ap').checked) perms.push('approve');
+    a.permissions = perms; DB.commit(); UI.toast('Permissions updated'); render();
+  });
+};
+window.delG = id=> UI.confirm('Delete group?', ()=>{ const d = DB.get(); d.groups = d.groups.filter(x=>x.id!==id); DB.commit(); render(); });
+window.delS = id=> UI.confirm('Remove student?', ()=>{ const d = DB.get(); d.students = d.students.filter(x=>x.id!==id); DB.commit(); render(); });
+window.delL = id=> UI.confirm('Delete lead?', ()=>{ const d = DB.get(); d.studentLeads = d.studentLeads.filter(x=>x.id!==id); DB.commit(); render(); });
+window.delSes = id=> UI.confirm('Cancel session?', ()=>{ const d = DB.get(); d.sessions = d.sessions.filter(x=>x.id!==id); DB.commit(); render(); });
+window.viewG = (id)=>{ const g = DB.get().groups.find(x=>x.id===id); UI.modal(g.name, `<p><b>Subject:</b> ${g.subject}</p><p><b>Schedule:</b> ${g.schedule}</p><p><b>Classroom:</b> ${g.classroom}</p><p><b>Capacity:</b> ${g.capacity}</p>`); };
+window.assignG = (id)=>{
+  const d = DB.get(); const s = d.students.find(x=>x.id===id);
+  const opts = d.groups.filter(g=>g.centerId===cid).map(g=>`<label class="check"><input type="checkbox" value="${g.id}" ${s.groupIds.includes(g.id)?'checked':''}> ${g.name}</label>`).join('');
+  UI.modal('Assign Groups for '+s.name, `<div style="display:flex;flex-direction:column;gap:6px">${opts}</div>`, m=>{
+    s.groupIds = [...m.querySelectorAll('input:checked')].map(i=>+i.value); DB.commit(); UI.toast('Groups updated'); render();
+  });
+};
+window.convertLead = (id)=>{
+  const d = DB.get(); const l = d.studentLeads.find(x=>x.id===id);
+  const sid = Date.now();
+  d.students.push({id:sid,name:l.name,email:l.name.replace(/\s/g,'').toLowerCase()+'@stu.com',phone:l.phone,stage:l.stage,parentPhone:'',centerId:cid,groupIds:[]});
+  d.studentLeads = d.studentLeads.filter(x=>x.id!==id);
+  DB.commit(); UI.toast('Converted to student'); render();
+};
+window.markPaid = (id)=>{ const d = DB.get(); const p = d.payments.find(x=>x.id===id); p.status='paid'; DB.commit(); UI.toast('Marked paid'); render(); };
+
+setupNav();
+render();
+</script>
+</body></html>

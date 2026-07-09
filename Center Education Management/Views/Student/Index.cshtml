@@ -1,0 +1,41 @@
+@model IEnumerable<Center_Education_Management.view_models.StudentListVM>
+
+@{
+    ViewData["Title"] = "Students";
+}
+
+<h2>Students</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Stage</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.FirstName</td>
+            <td>@item.LastName</td>
+            <td>@item.StageName</td>
+            <td>@item.Status</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

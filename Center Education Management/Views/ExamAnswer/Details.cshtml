@@ -1,0 +1,31 @@
+﻿@model Center_Education_Management.Model.ExamAnswer
+
+@{
+    ViewData["Title"] = "ExamAnswer Details";
+}
+
+<h2>ExamAnswer Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.AttemptId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.AttemptId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ExamQuestionId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.ExamQuestionId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.AnswerText)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.AnswerText)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.IsAutoGraded)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.IsAutoGraded)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.EarnedPoints)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.EarnedPoints)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GradedBy)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GradedBy)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GradedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GradedAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SavedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.SavedAt)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

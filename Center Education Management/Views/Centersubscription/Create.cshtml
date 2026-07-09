@@ -1,0 +1,69 @@
+﻿@model Center_Education_Management.Model.Centersubscription
+
+@{
+    ViewData["Title"] = "Create Centersubscription";
+}
+
+<h2>Create Centersubscription</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="CenterId" class="form-label"></label>
+                        <input asp-for="CenterId" class="form-control" type="number" />
+                        <span asp-validation-for="CenterId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PlanId" class="form-label"></label>
+                        <input asp-for="PlanId" class="form-control" type="number" />
+                        <span asp-validation-for="PlanId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Status" class="form-label"></label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Pending">Pending</option>
+                            <option value="Active">Active</option>
+                            <option value="Expired">Expired</option>
+                            <option value="Suspended">Suspended</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="BillingCycle" class="form-label"></label>
+                        <select asp-for="BillingCycle" class="form-select">
+                            <option value="Monthly">Monthly</option>
+                            <option value="Semester">Semester</option>
+                            <option value="Yearly">Yearly</option>
+                        </select>
+                        <span asp-validation-for="BillingCycle" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="StartsAt" class="form-label"></label>
+                        <input asp-for="StartsAt" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="StartsAt" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="EndsAt" class="form-label"></label>
+                        <input asp-for="EndsAt" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="EndsAt" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ApprovedBy" class="form-label"></label>
+                        <input asp-for="ApprovedBy" class="form-control" type="number" />
+                        <span asp-validation-for="ApprovedBy" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ApprovedAt" class="form-label"></label>
+                        <input asp-for="ApprovedAt" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="ApprovedAt" class="text-danger"></span>
+                    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

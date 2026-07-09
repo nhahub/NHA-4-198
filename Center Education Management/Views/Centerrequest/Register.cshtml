@@ -1,0 +1,35 @@
+@using Center_Education_Management.view_models
+@model CreateCenterRequestVM
+@{
+    ViewData["Title"] = "تسجيل سنتر جديد";
+}
+
+<section class="container section">
+  <div class="section-title"><h2>سجل سنترك في TeachFlow</h2><div class="dash"></div></div>
+
+  <div class="contact-card" style="max-width:640px;margin:0 auto">
+    <div class="contact-right" style="grid-column:1/-1">
+      <div asp-validation-summary="All" class="form-grid" style="color:#c0392b;margin-bottom:14px"></div>
+
+      <form class="form-grid" asp-controller="Centerrequest" asp-action="Register" method="post">
+        <label><span>اسم السنتر</span>
+          <input asp-for="CenterName" placeholder="أدخل اسم السنتر" />
+          <span asp-validation-for="CenterName" style="color:#c0392b;font-size:12px"></span>
+        </label>
+        <label><span>رقم التلفون</span>
+          <input asp-for="ContactPhone" placeholder="أدخل رقم التلفون" />
+          <span asp-validation-for="ContactPhone" style="color:#c0392b;font-size:12px"></span>
+        </label>
+        <label><span>المدينة</span>
+          <input asp-for="City" placeholder="أدخل المدينة" />
+          <span asp-validation-for="City" style="color:#c0392b;font-size:12px"></span>
+        </label>
+        <label class="full"><span>العنوان</span>
+          <input asp-for="Address" placeholder="أدخل عنوان السنتر" />
+          <span asp-validation-for="Address" style="color:#c0392b;font-size:12px"></span>
+        </label>
+        <button type="submit" class="btn btn-primary submit full"><i class="icon-send"></i> سجل الآن</button>
+      </form>
+    </div>
+  </div>
+</section>

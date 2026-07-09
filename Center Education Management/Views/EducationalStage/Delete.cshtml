@@ -1,0 +1,30 @@
+﻿@model Center_Education_Management.Model.EducationalStage
+
+@{
+    ViewData["Title"] = "Delete EducationalStage";
+}
+
+<h2>Delete EducationalStage</h2>
+
+<div class="alert alert-danger">Are you sure you want to delete this item?</div>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Name)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Name)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.LevelNumber)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.LevelNumber)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.DisplayName)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.DisplayName)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.EducationSystem)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.EducationSystem)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.IsActive)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.IsActive)</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,42 @@
+﻿@model Center_Education_Management.Model.Payment
+
+@{
+    ViewData["Title"] = "Delete Payment";
+}
+
+<h2>Delete Payment</h2>
+
+<div class="alert alert-danger">Are you sure you want to delete this item?</div>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StudentId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StudentId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CenterId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CenterId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GroupId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GroupId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Amount)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Amount)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Method)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Method)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Status)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GatewayRef)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GatewayRef)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.RecordedBy)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.RecordedBy)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.PaidAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.PaidAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CreatedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CreatedAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.PaymentGatewayId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.PaymentGatewayId)</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

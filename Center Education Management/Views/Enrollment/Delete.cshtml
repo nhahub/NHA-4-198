@@ -1,0 +1,28 @@
+﻿@model Center_Education_Management.Model.Enrollment
+
+@{
+    ViewData["Title"] = "Delete Enrollment";
+}
+
+<h2>Delete Enrollment</h2>
+
+<div class="alert alert-danger">Are you sure you want to delete this item?</div>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Status)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StudentId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StudentId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GroupId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GroupId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CenterId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CenterId)</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

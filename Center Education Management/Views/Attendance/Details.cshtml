@@ -1,0 +1,29 @@
+﻿@model Center_Education_Management.Model.Attendance
+
+@{
+    ViewData["Title"] = "Attendance Details";
+}
+
+<h2>Attendance Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Status)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.AttendanceMode)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.AttendanceMode)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.RecordedByID)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.RecordedByID)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StudentId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StudentId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SessionId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.SessionId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.QRTokenId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.QRTokenId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.RecordedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.RecordedAt)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

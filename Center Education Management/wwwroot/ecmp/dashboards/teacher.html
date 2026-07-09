@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Teacher · ECMP</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../css/style.css"></head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><h2>👨‍🏫 Teacher</h2><small>Teaching Tools</small></div>
+    <nav class="nav">
+      <a href="#" data-page="overview">📊 <span>Overview</span></a>
+      <a href="#" data-page="groups">👥 <span>My Groups</span></a>
+      <a href="#" data-page="schedule">📅 <span>My Schedule</span></a>
+      <a href="#" data-page="qr">📱 <span>Generate QR</span></a>
+      <a href="#" data-page="exams">📝 <span>Exams</span></a>
+      <a href="#" data-page="bank">🏦 <span>Question Bank</span></a>
+      <a href="#" data-page="content">📚 <span>Content Library</span></a>
+      <a href="#" data-page="assignments">📋 <span>Assignments</span></a>
+    </nav>
+    <button class="logout">🚪 Logout</button>
+  </aside>
+  <main class="main">
+    <div id="topbarSlot"></div>
+    <div class="content">
+      <section id="page-overview" class="page"><div class="stats" id="stats"></div>
+        <div class="card"><h3>Upcoming Sessions</h3><div id="upcoming"></div></div></section>
+
+      <section id="page-groups" class="page"><div class="card"><h3>My Groups</h3><div id="myGroups"></div></div></section>
+
+      <section id="page-schedule" class="page"><div class="card"><h3>Weekly Schedule</h3><div id="schedule"></div></div></section>
+
+      <section id="page-qr" class="page"><div class="card"><h3>Generate Attendance QR Code</h3>
+        <p style="color:var(--muted)">Select a session and generate a time-limited QR for students to scan.</p>
+        <div class="field"><label>Select Session</label><select id="qrSes" class="input"></select></div>
+        <button class="btn" id="qrGen">📱 Generate QR Code</button>
+        <div id="qrOut" style="margin-top:18px;text-align:center"></div>
+      </div></section>
+
+      <section id="page-exams" class="page"><div class="card"><h3>Exams <button class="btn sm" id="addExam" style="float:right">+ Create Exam</button></h3>
+        <div id="examsTable"></div></div></section>
+
+      <section id="page-bank" class="page"><div class="card"><h3>Question Bank
+        <button class="btn sm" id="bankAdd" style="float:right">+ Add Question</button></h3>
+        <p style="color:var(--muted);font-size:13px">Build your own bank of questions once — organized by subject and topic/branch (e.g. Algebra, Calculus, Statistics) — then pick from it when creating any exam.</p>
+        <div class="grid-3" style="margin-bottom:14px">
+          <div class="field"><label>Filter by Subject</label><select id="bankFilter"><option value="">All Subjects</option></select></div>
+          <div class="field"><label>Filter by Topic</label><select id="bankTopicFilter"><option value="">All Topics</option></select></div>
+          <div class="field"><label>Search</label><input class="input" id="bankSearch" placeholder="Search question text..."></div>
+        </div>
+        <div id="bankList"></div></div></section>
+
+      <section id="page-content" class="page"><div class="card"><h3>Content Library <button class="btn sm" id="addCont" style="float:right">+ Upload Content</button></h3>
+        <p style="color:var(--muted);font-size:13px;margin-top:-6px">Upload PDFs, videos, images, documents, or share a link with your groups.</p>
+        <div id="contGrid"></div></div></section>
+
+      <section id="page-assignments" class="page"><div class="card"><h3>Assignments <button class="btn sm" id="addAsg" style="float:right">+ Create Assignment</button></h3>
+        <p style="color:var(--muted);font-size:13px;margin-top:-6px">Create assignments and optionally attach a worksheet or file from your device.</p>
+        <div id="asgGrid"></div></div></section>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+const user = Auth.require('teacher');
+document.getElementById('topbarSlot').outerHTML = topbar(user);
+
+function table(cols,rows){ if(!rows.length) return '<p style="color:var(--muted)">No records.</p>';
+  return `<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+function render(){
+  const d = DB.get();
+  const myGroups = d.groups.filter(g=>g.teacherId===user.id);
+  const groupIds = myGroups.map(g=>g.id);
+  const mySessions = d.sessions.filter(s=>groupIds.includes(s.groupId));
+  const myExams = d.exams.filter(e=>groupIds.includes(e.groupId));
+  const studentsCount = d.students.filter(s=>s.groupIds && s.groupIds.some(g=>groupIds.includes(g))).length;
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="lbl">My Groups</div><div class="val">${myGroups.length}</div></div>
+    <div class="stat"><div class="lbl">My Students</div><div class="val">${studentsCount}</div></div>
+    <div class="stat"><div class="lbl">Upcoming Sessions</div><div class="val">${mySessions.filter(s=>s.status==='scheduled').length}</div></div>
+    <div class="stat"><div class="lbl">Active Exams</div><div class="val">${myExams.length}</div></div>
+  `;
+  document.getElementById('upcoming').innerHTML = table(['Group','Date','Time','Actions'],
+    mySessions.filter(s=>s.status==='scheduled').map(s=>{ const g = d.groups.find(x=>x.id===s.groupId);
+      return [g?.name||'—',s.date,`${s.startTime}-${s.endTime}`,
+        `<button class="btn sm" onclick="goSes(${s.id})">📱 QR</button>
+         <button class="btn sm success" onclick="completeSes(${s.id})">✓ Complete</button>`];
+    }));
+
+  document.getElementById('myGroups').innerHTML = myGroups.map(g=>{
+    const studs = d.students.filter(s=>s.groupIds && s.groupIds.includes(g.id));
+    return `<div class="card" style="margin-bottom:10px"><h4>${g.name}</h4>
+      <p style="color:var(--muted);font-size:13px">${g.subject} · ${g.schedule} · ${g.classroom}</p>
+      <p>👥 ${studs.length} students</p>
+      <button class="btn sm" onclick="viewStudents(${g.id})">View Students</button></div>`;
+  }).join('') || '<p style="color:var(--muted)">No groups assigned.</p>';
+
+  document.getElementById('schedule').innerHTML = table(['Group','Date','Time','Status'],
+    mySessions.map(s=>{ const g = d.groups.find(x=>x.id===s.groupId);
+      return [g?.name||'—',s.date,`${s.startTime}-${s.endTime}`,`<span class="badge ${s.status==='completed'?'green':'amber'}">${s.status}</span>`];
+    }));
+
+  // qr select
+  const sel = document.getElementById('qrSes');
+  sel.innerHTML = mySessions.map(s=>{ const g = d.groups.find(x=>x.id===s.groupId); return `<option value="${s.id}">${g?.name} - ${s.date} ${s.startTime}</option>`; }).join('');
+
+  document.getElementById('examsTable').innerHTML = table(['Title','Group','Duration','Marks','Pass','Status','Actions'],
+    myExams.map(e=>{ const g = d.groups.find(x=>x.id===e.groupId);
+      return [e.title,g?.name||'—',e.duration+' min',e.totalMarks,e.passingMarks,`<span class="badge green">${e.status}</span>`,
+        `<button class="btn sm" onclick="viewExam(${e.id})">Questions</button>
+         <button class="btn sm" onclick="viewResults(${e.id})">Results</button>
+         <button class="btn sm danger" onclick="delExam(${e.id})">Delete</button>`];
+    }));
+
+  document.getElementById('contGrid').innerHTML = contentGrid(
+    d.content.filter(c=>groupIds.includes(c.groupId)), myGroups, true
+  );
+
+  document.getElementById('asgGrid').innerHTML = assignmentGrid(
+    d.assignments.filter(a=>groupIds.includes(a.groupId)), myGroups, true, d.submissions
+  );
+
+  // Question Bank filters (subject + topic)
+  const bf = document.getElementById('bankFilter');
+  const prevSubj = bf.value;
+  const myBank = d.questionBank.filter(x=>x.teacherId===user.id);
+  const subjects = [...new Set(myBank.map(x=>x.subject))];
+  bf.innerHTML = '<option value="">All Subjects</option>' + subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
+  bf.value = prevSubj;
+
+  const tf = document.getElementById('bankTopicFilter');
+  const prevTopic = tf.value;
+  const topics = [...new Set(myBank.map(x=>x.topic).filter(Boolean))];
+  tf.innerHTML = '<option value="">All Topics</option>' + topics.map(t=>`<option value="${t}">${t}</option>`).join('');
+  tf.value = prevTopic;
+
+  renderBank();
+}
+
+function renderBank(){
+  const d = DB.get();
+  const subj = document.getElementById('bankFilter').value;
+  const topic = document.getElementById('bankTopicFilter').value;
+  const q = (document.getElementById('bankSearch').value||'').toLowerCase();
+  let qs = d.questionBank.filter(x=>x.teacherId===user.id);
+  if(subj) qs = qs.filter(x=>x.subject===subj);
+  if(topic) qs = qs.filter(x=>x.topic===topic);
+  if(q) qs = qs.filter(x=>x.text.toLowerCase().includes(q));
+  const out = document.getElementById('bankList');
+  if(!qs.length){ out.innerHTML = '<p style="color:var(--muted)">No questions in your bank yet. Click "+ Add Question" to create your first one.</p>'; return; }
+  out.innerHTML = qs.map(x=>{
+    const usedIn = d.exams.filter(e=>(e.questionIds||[]).includes(x.id));
+    return `<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div><span class="badge blue">${x.subject}</span> ${x.topic?`<span class="badge amber">${x.topic}</span>`:''} <span class="badge" style="background:#0b1220;color:var(--muted)">${x.type}</span> <small style="color:var(--muted)">${x.points} pts</small>
+          ${usedIn.length?`<small style="color:var(--muted)"> · used in ${usedIn.length} exam${usedIn.length>1?'s':''}</small>`:''}</div>
+        <button class="btn sm danger" onclick="delQ(${x.id})">Delete</button>
+      </div>
+      <p style="margin:10px 0 6px"><b>Q:</b> ${x.text}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${x.options.map((o,i)=>`<span class="badge ${i===x.correct?'green':''}" style="${i!==x.correct?'background:#0b1220;color:var(--muted)':''}">${i===x.correct?'✓ ':''}${o}</span>`).join('')}
+      </div>
+      <p style="margin:8px 0 0;color:var(--success);font-size:13px"><b>Answer:</b> ${x.options[x.correct]}</p>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('bankFilter').onchange = renderBank;
+document.getElementById('bankTopicFilter').onchange = renderBank;
+document.getElementById('bankSearch').oninput = renderBank;
+
+// Builds the Add/Edit Question form body used by the Question Bank "+ Add Question" flow.
+function questionFormHtml(defaultSubject, defaultTopic){
+  return `
+    <div class="grid-2">
+      <div class="field"><label>Subject</label><input class="input" id="qsub" value="${defaultSubject||''}" placeholder="e.g. Mathematics"></div>
+      <div class="field"><label>Topic / Branch</label><input class="input" id="qtopic" value="${defaultTopic||''}" placeholder="e.g. Algebra, Calculus, Statistics"></div>
+    </div>
+    <div class="field"><label>Question</label><textarea class="input" id="qt"></textarea></div>
+    <div class="field"><label>Type</label><select id="qtp"><option value="MCQ">Multiple Choice</option><option value="TrueFalse">True / False</option></select></div>
+    <div class="field" id="qopField"><label>Options (comma-separated)</label><input class="input" id="qop" placeholder="A,B,C,D"></div>
+    <div class="grid-2">
+      <div class="field"><label>Correct Answer</label><select id="qci"><option value="0">— type options first —</option></select></div>
+      <div class="field"><label>Points</label><input class="input" id="qpt" type="number" value="5"></div>
+    </div>`;
+}
+// Reads the question form and returns a new question object, or null (with a toast) if invalid.
+function readQuestionForm(m, teacherId){
+  const text = m.querySelector('#qt').value.trim();
+  if(!text){ UI.toast('Enter question text','error'); return null; }
+  const type = m.querySelector('#qtp').value;
+  const options = type==='TrueFalse' ? ['True','False'] : m.querySelector('#qop').value.split(',').map(s=>s.trim()).filter(Boolean);
+  if(options.length<2){ UI.toast('Add at least 2 options','error'); return null; }
+  const correct = +m.querySelector('#qci').value;
+  if(correct<0 || correct>=options.length){ UI.toast('Correct index is out of range','error'); return null; }
+  return {id:Date.now(), teacherId, subject:m.querySelector('#qsub').value.trim()||'General', topic:m.querySelector('#qtopic').value.trim()||'', type, text, options, correct, points:+m.querySelector('#qpt').value||1};
+}
+function wireQuestionFormTypeToggle(bg){
+  const tp = bg.querySelector('#qtp'), opField = bg.querySelector('#qopField');
+  const opInput = bg.querySelector('#qop');
+  const correctSel = bg.querySelector('#qci');
+  const syncCorrectOptions = ()=>{
+    const opts = tp.value === 'TrueFalse' ? ['True','False'] : opInput.value.split(',').map(s=>s.trim()).filter(Boolean);
+    const prevVal = correctSel.value;
+    correctSel.innerHTML = opts.length
+      ? opts.map((o,i)=>`<option value="${i}">${o}</option>`).join('')
+      : '<option value="0">— type options first —</option>';
+    if(opts.length && +prevVal < opts.length) correctSel.value = prevVal;
+  };
+  const sync = ()=>{ opField.style.display = tp.value==='TrueFalse' ? 'none' : ''; syncCorrectOptions(); };
+  tp.onchange = sync;
+  opInput.oninput = syncCorrectOptions;
+  sync();
+}
+
+document.getElementById('bankAdd').onclick = ()=>{
+  const d = DB.get();
+  const bg = UI.modal('Add Question to Bank', questionFormHtml(), m=>{
+    const nq = readQuestionForm(m, user.id);
+    if(!nq) return false;
+    d.questionBank.push(nq);
+    DB.commit(); UI.toast('Question added to bank'); render();
+  });
+  wireQuestionFormTypeToggle(bg);
+};
+window.delQ = (id)=> UI.confirm('Delete this question from your bank? It will also be removed from any exams that use it.', ()=>{
+  const d = DB.get();
+  d.questionBank = d.questionBank.filter(q=>q.id!==id);
+  d.exams.forEach(e=>{ if(e.questionIds) e.questionIds = e.questionIds.filter(qid=>qid!==id); });
+  DB.commit(); UI.toast('Question deleted'); render();
+});
+
+document.getElementById('qrGen').onclick = ()=>{
+  const sid = document.getElementById('qrSes').value;
+  if(!sid) return UI.toast('No session selected','error');
+  const token = 'QR-'+sid+'-'+Date.now();
+  document.getElementById('qrOut').innerHTML = `
+    <div class="qr-box">${makeQR(token)}</div>
+    <p style="margin-top:10px"><b>Token:</b> <code>${token}</code></p>
+    <p style="color:var(--muted);font-size:12px">Expires in 5 minutes. Students scan to auto-mark attendance.</p>`;
+  UI.toast('QR generated');
+};
+
+window.goSes = (id)=>{
+  document.querySelector('[data-page="qr"]').click();
+  setTimeout(()=>{ document.getElementById('qrSes').value = id; document.getElementById('qrGen').click(); }, 100);
+};
+window.completeSes = (id)=>{ const d = DB.get(); const s = d.sessions.find(x=>x.id===id); s.status='completed'; DB.commit(); UI.toast('Session completed'); render(); };
+window.viewStudents = (gid)=>{
+  const d = DB.get();
+  const studs = d.students.filter(s=>s.groupIds && s.groupIds.includes(gid));
+  UI.modal('Students in Group', `<table><thead><tr><th>Name</th><th>Stage</th><th>Phone</th></tr></thead><tbody>${studs.map(s=>`<tr><td>${s.name}</td><td>${s.stage}</td><td>${s.phone}</td></tr>`).join('') || '<tr><td colspan="3">None</td></tr>'}</tbody></table>`);
+};
+
+document.getElementById('addExam').onclick = ()=>{
+  const d = DB.get();
+  const myGroups = d.groups.filter(g=>g.teacherId===user.id);
+  if(!myGroups.length) return UI.toast('You have no groups assigned yet','error');
+  const gOpt = myGroups.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+  UI.modal('Create Exam',`
+    <div class="field"><label>Title</label><input class="input" id="t"></div>
+    <div class="field"><label>Group</label><select id="g">${gOpt}</select></div>
+    <div class="grid-2">
+      <div class="field"><label>Duration (min)</label><input class="input" id="dur" type="number" value="60"></div>
+      <div class="field"><label>Total Marks</label><input class="input" id="tm" type="number" value="50"></div>
+      <div class="field"><label>Passing</label><input class="input" id="pm" type="number" value="25"></div>
+    </div>
+    <p style="color:var(--muted);font-size:12px;margin-top:6px">After creating the exam you'll pick its questions from your Question Bank.</p>`, m=>{
+    const newExam = {id:Date.now(), title:m.querySelector('#t').value, groupId:+m.querySelector('#g').value, duration:+m.querySelector('#dur').value, totalMarks:+m.querySelector('#tm').value, passingMarks:+m.querySelector('#pm').value, status:'published', questionIds:[]};
+    d.exams.push(newExam);
+    DB.commit(); UI.toast('Exam created — now add its questions'); render();
+    viewExam(newExam.id);
+  });
+};
+
+// Manage which Question Bank questions belong to a given exam.
+// Questions can only be SELECTED here — creating new questions is only
+// allowed from the Question Bank page, not from inside an exam.
+window.viewExam = (id)=>{
+  const d = DB.get();
+  const ex = d.exams.find(e=>e.id===id);
+  const g = d.groups.find(x=>x.id===ex.groupId);
+  const included = (ex.questionIds||[]).map(qid=>d.questionBank.find(q=>q.id===qid)).filter(Boolean);
+  const available = d.questionBank.filter(q=>q.teacherId===user.id && !(ex.questionIds||[]).includes(q.id));
+  const topics = [...new Set(available.map(q=>q.topic).filter(Boolean))];
+
+  const bg = UI.modal(`Manage Questions · ${ex.title}`, `
+    <p style="color:var(--muted);font-size:13px">${g?.subject?`Subject: <b style="color:var(--text)">${g.subject}</b> · `:''}${included.length} question(s) in this exam. Students will see them in random order.</p>
+    <div id="inclList">${included.map((q,i)=>`
+      <div class="card" style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;gap:10px">
+          <b>Q${i+1}.</b>
+          <button class="btn sm danger" data-remove="${q.id}">Remove</button>
+        </div>
+        <p style="margin:6px 0">${q.text} <small style="color:var(--muted)">(${q.points} pts)</small></p>
+        <small style="color:var(--muted)">Options: ${q.options.join(' | ')} · Correct: ${q.options[q.correct]}</small>
+      </div>`).join('') || '<p style="color:var(--muted)">No questions added yet — add some from your bank below.</p>'}</div>
+    <hr style="border-color:var(--line);margin:16px 0">
+    <h4 style="margin:0 0 10px">Add from Question Bank</h4>
+    ${available.length ? `
+      ${topics.length>1 ? `
+        <p style="color:var(--muted);font-size:12px;margin:0 0 6px">Filter by topic/branch — click one or more (e.g. Statistics only, or Statistics + Algebra):</p>
+        <div id="topicChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+          ${topics.map(t=>`<button type="button" class="btn sm ghost topic-chip" data-topic="${t}" style="padding:6px 12px">${t}</button>`).join('')}
+        </div>
+      ` : ''}
+      <div id="bankPick" style="max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:6px">
+        ${available.map(q=>`
+          <label data-topic="${q.topic||''}" style="display:block;padding:8px 10px;background:#0b1220;border:1px solid var(--line);border-radius:8px;cursor:pointer">
+            <input type="checkbox" value="${q.id}"> <span class="badge blue">${q.subject}</span> ${q.topic?`<span class="badge amber">${q.topic}</span>`:''} ${q.text} <small style="color:var(--muted)">(${q.points} pts)</small>
+          </label>`).join('')}
+      </div>
+      <button class="btn sm" id="addSelected" style="margin-top:10px">+ Add Selected to Exam</button>
+    ` : `<p style="color:var(--muted);font-size:13px">No more questions available in your bank. Go to <b>Question Bank</b> to add new ones, then come back here to select them.</p>`}
+  `, null);
+
+  // Topic filter chips: toggling one or more narrows the bank list below
+  // (e.g. show only "Statistics", or "Statistics" + "Algebra" together).
+  const selectedTopics = new Set();
+  function applyTopicFilter(){
+    bg.querySelectorAll('#bankPick > label').forEach(row=>{
+      const show = selectedTopics.size===0 || selectedTopics.has(row.dataset.topic);
+      row.style.display = show ? '' : 'none';
+    });
+  }
+  bg.querySelectorAll('.topic-chip').forEach(chip=>{
+    chip.onclick = ()=>{
+      const t = chip.dataset.topic;
+      if(selectedTopics.has(t)){ selectedTopics.delete(t); chip.style.background=''; chip.style.color=''; chip.style.borderColor=''; }
+      else { selectedTopics.add(t); chip.style.background='var(--primary)'; chip.style.color='#fff'; chip.style.borderColor='var(--primary)'; }
+      applyTopicFilter();
+    };
+  });
+
+  bg.querySelectorAll('[data-remove]').forEach(btn=>{
+    btn.onclick = ()=>{
+      ex.questionIds = (ex.questionIds||[]).filter(qid=>qid!==+btn.dataset.remove);
+      DB.commit(); bg.remove(); viewExam(id); render();
+    };
+  });
+  const addSelBtn = bg.querySelector('#addSelected');
+  if(addSelBtn) addSelBtn.onclick = ()=>{
+    const checked = [...bg.querySelectorAll('#bankPick input:checked')].map(c=>+c.value);
+    if(!checked.length) return UI.toast('Select at least one question','error');
+    ex.questionIds = [...(ex.questionIds||[]), ...checked];
+    DB.commit(); UI.toast('Questions added to exam'); bg.remove(); viewExam(id); render();
+  };
+};
+window.viewResults = (id)=>{
+  const d = DB.get(); const recs = d.examRecords.filter(r=>r.examId===id);
+  UI.modal('Exam Results', `<table><thead><tr><th>Student</th><th>Score</th><th>Status</th></tr></thead><tbody>${recs.map(r=>{ const s = d.students.find(x=>x.id===r.studentId); const ex = d.exams.find(x=>x.id===id); return `<tr><td>${s?.name||'—'}</td><td>${r.score}/${ex.totalMarks}</td><td><span class="badge ${r.score>=ex.passingMarks?'green':'red'}">${r.score>=ex.passingMarks?'Passed':'Failed'}</span></td></tr>`; }).join('') || '<tr><td colspan="3">No submissions yet.</td></tr>'}</tbody></table>`);
+};
+window.delExam = id=> UI.confirm('Delete exam?', ()=>{ const d = DB.get(); d.exams = d.exams.filter(e=>e.id!==id); DB.commit(); render(); });
+
+document.getElementById('addCont').onclick = ()=>{
+  const d = DB.get();
+  const myGroups = d.groups.filter(g=>g.teacherId===user.id);
+  openContentUploadModal(myGroups, user.id, entry=>{
+    d.content.push(entry);
+    DB.commit(); UI.toast('Content uploaded'); render();
+  });
+};
+window.delCont = id=> UI.confirm('Delete?', ()=>{ const d = DB.get(); d.content = d.content.filter(c=>c.id!==id); DB.commit(); render(); });
+
+document.getElementById('addAsg').onclick = ()=>{
+  const d = DB.get();
+  const myGroups = d.groups.filter(g=>g.teacherId===user.id);
+  openAssignmentModal(myGroups, user.id, entry=>{
+    d.assignments.push(entry);
+    DB.commit(); UI.toast('Assignment created'); render();
+  });
+};
+window.delAsg = id=> UI.confirm('Delete?', ()=>{ const d = DB.get(); d.assignments = d.assignments.filter(a=>a.id!==id); DB.commit(); render(); });
+
+setupNav();
+render();
+</script>
+</body></html>

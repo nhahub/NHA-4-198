@@ -1,4 +1,5 @@
-﻿using Center_Education_Management.Models;
+﻿using Center_Education_Management.Model;
+using Center_Education_Management.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;

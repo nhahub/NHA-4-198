@@ -1,0 +1,36 @@
+﻿@model Center_Education_Management.Model.ExamAnswer
+
+@{
+    ViewData["Title"] = "Delete ExamAnswer";
+}
+
+<h2>Delete ExamAnswer</h2>
+
+<div class="alert alert-danger">Are you sure you want to delete this item?</div>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.AttemptId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.AttemptId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ExamQuestionId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.ExamQuestionId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.AnswerText)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.AnswerText)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.IsAutoGraded)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.IsAutoGraded)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.EarnedPoints)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.EarnedPoints)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GradedBy)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GradedBy)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GradedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GradedAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SavedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.SavedAt)</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

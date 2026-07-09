@@ -1,3 +1,7 @@
+using Center_Education_Management.EFcore;
+using Center_Education_Management.Repository;
+using Microsoft.EntityFrameworkCore;
+
 namespace Center_Education_Management
 {
     public class Program
@@ -6,16 +10,23 @@ namespace Center_Education_Management
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // MVC
             builder.Services.AddControllersWithViews();
+
+            // DbContext
+            builder.Services.AddDbContext<CenterDBContext>(options =>
+     options.UseSqlServer(
+         "Data Source=.\\SQLEXPRESS;Initial Catalog=ahmed;Integrated Security=True;TrustServerCertificate=True;Encrypt=True")
+     .UseLazyLoadingProxies());
+
+            // Unit Of Work
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 

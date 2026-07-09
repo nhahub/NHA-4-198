@@ -1,0 +1,60 @@
+﻿@model Center_Education_Management.Model.Paymentgetway
+
+@{
+    ViewData["Title"] = "Edit Paymentgetway";
+}
+
+<h2>Edit Paymentgetway</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="CenterId" class="form-label"></label>
+                        <input asp-for="CenterId" class="form-control" type="number" />
+                        <span asp-validation-for="CenterId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="OwnerId" class="form-label"></label>
+                        <input asp-for="OwnerId" class="form-control" type="number" />
+                        <span asp-validation-for="OwnerId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Provider" class="form-label"></label>
+                        <select asp-for="Provider" class="form-select">
+                            <option value="Fawry">Fawry</option>
+                            <option value="Instapay">Instapay</option>
+                            <option value="Visa">Visa</option>
+                            <option value="VodafoneCash">VodafoneCash</option>
+                        </select>
+                        <span asp-validation-for="Provider" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Credentials" class="form-label"></label>
+                        <input asp-for="Credentials" class="form-control" type="text" />
+                        <span asp-validation-for="Credentials" class="text-danger"></span>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                        <label asp-for="IsActive" class="form-label"></label>
+                        <span asp-validation-for="IsActive" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="CreatedAt" class="form-label"></label>
+                        <input asp-for="CreatedAt" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="UpdatedAt" class="form-label"></label>
+                        <input asp-for="UpdatedAt" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="UpdatedAt" class="text-danger"></span>
+                    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,33 @@
+﻿@model Center_Education_Management.Model.QuestionBank
+
+@{
+    ViewData["Title"] = "QuestionBank Details";
+}
+
+<h2>QuestionBank Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.TeacherId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.TeacherId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CenterId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CenterId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SubjectId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.SubjectId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Lesson)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Lesson)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Type)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Type)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Body)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Body)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.OptionsJson)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.OptionsJson)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CorrectAnswer)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CorrectAnswer)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Points)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Points)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

@@ -1,0 +1,29 @@
+﻿@model Center_Education_Management.Model.Paymentgetway
+
+@{
+    ViewData["Title"] = "Paymentgetway Details";
+}
+
+<h2>Paymentgetway Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CenterId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CenterId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.OwnerId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.OwnerId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Provider)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Provider)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Credentials)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Credentials)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.IsActive)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.IsActive)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CreatedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CreatedAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.UpdatedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.UpdatedAt)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

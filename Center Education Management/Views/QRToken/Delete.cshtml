@@ -1,0 +1,32 @@
+﻿@model Center_Education_Management.Model.QRToken
+
+@{
+    ViewData["Title"] = "Delete QRToken";
+}
+
+<h2>Delete QRToken</h2>
+
+<div class="alert alert-danger">Are you sure you want to delete this item?</div>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SessionId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.SessionId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GeneratedById)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GeneratedById)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Token)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Token)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.GeneratedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.GeneratedAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ExpiresAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.ExpiresAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Status)</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

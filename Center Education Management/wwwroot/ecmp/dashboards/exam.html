@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Exam · ECMP</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  body{background:linear-gradient(135deg,#0b1220,#0f172a);min-height:100vh}
+  .exam-shell{max-width:900px;margin:0 auto;padding:20px;min-height:100vh;display:flex;flex-direction:column}
+  .exam-head{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;position:sticky;top:10px;z-index:5;box-shadow:var(--shadow)}
+  .exam-head h1{margin:0;font-size:20px}
+  .timer{font-size:28px;font-weight:800;background:linear-gradient(90deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+  .timer.warn{background:linear-gradient(90deg,#f59e0b,#ef4444);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .counters{display:flex;gap:14px;font-size:13px;color:var(--muted)}
+  .counters b{color:var(--text);font-size:16px}
+  .progress{height:6px;background:#0b1220;border-radius:6px;overflow:hidden;margin-top:8px;width:100%}
+  .progress > div{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));transition:.3s}
+  .q-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:16px}
+  .q-card.answered{border-color:var(--success)}
+  .q-num{color:var(--accent);font-weight:700;margin-bottom:8px;font-size:13px;text-transform:uppercase;letter-spacing:1px}
+  .q-text{font-size:16px;margin:0 0 14px}
+  .opt{display:block;padding:12px 14px;background:#0b1220;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:.15s}
+  .opt:hover{border-color:var(--primary)}
+  .opt input{margin-right:10px;accent-color:var(--primary)}
+  .opt.sel{border-color:var(--primary);background:rgba(99,102,241,.1)}
+  .submit-bar{position:sticky;bottom:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-top:20px;display:flex;justify-content:space-between;align-items:center;gap:14px;box-shadow:var(--shadow)}
+  .result{text-align:center;padding:60px 20px}
+  .result .score{font-size:72px;font-weight:800;background:linear-gradient(90deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;margin:14px 0}
+</style></head>
+<body>
+<div class="exam-shell" id="shell">
+  <div class="exam-head">
+    <div style="flex:1;min-width:200px">
+      <h1 id="title">Loading...</h1>
+      <div class="counters">
+        <span>Answered: <b id="cAns">0</b></span>
+        <span>Remaining: <b id="cRem">0</b></span>
+        <span>Total: <b id="cTot">0</b></span>
+      </div>
+      <div class="progress"><div id="bar" style="width:0%"></div></div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Time Left</div>
+      <div class="timer" id="timer">--:--</div>
+    </div>
+  </div>
+  <div id="qs"></div>
+  <div class="submit-bar">
+    <button class="btn ghost" id="quit">← Quit</button>
+    <button class="btn success" id="submit">✓ Submit Exam</button>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+const user = Auth.require('student');
+const params = new URLSearchParams(location.search);
+const examId = +params.get('id');
+const d = DB.get();
+const exam = d.exams.find(e=>e.id===examId);
+const bankQs = exam ? (exam.questionIds||[]).map(qid=>d.questionBank.find(q=>q.id===qid)).filter(Boolean) : [];
+
+// Fisher-Yates shuffle
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; }
+  return a;
+}
+
+// Build a fresh, randomized copy of the exam for this attempt:
+// question order is shuffled, and each question's option order is shuffled
+// (with the correct index remapped) — nothing is written back to the bank.
+const qs = shuffle(bankQs).map(q=>{
+  const order = shuffle(q.options.map((_,i)=>i));
+  return { ...q, options: order.map(i=>q.options[i]), correct: order.indexOf(q.correct) };
+});
+
+if(!exam || !qs.length){
+  document.getElementById('shell').innerHTML = '<div class="result"><h2>Exam not available</h2><a class="btn" href="./student.html">Back</a></div>';
+  throw new Error('no exam');
+}
+if(d.examRecords.some(r=>r.examId===examId && r.studentId===user.id)){
+  document.getElementById('shell').innerHTML = '<div class="result"><h2>You already submitted this exam</h2><a class="btn" href="./student.html">Back</a></div>';
+  throw new Error('already');
+}
+
+const answers = {};
+document.getElementById('title').textContent = exam.title;
+document.getElementById('cTot').textContent = qs.length;
+document.getElementById('cRem').textContent = qs.length;
+
+document.getElementById('qs').innerHTML = qs.map((q,i)=>`
+  <div class="q-card" id="qc${q.id}">
+    <div class="q-num">Question ${i+1} of ${qs.length} · ${q.points} points</div>
+    <p class="q-text">${q.text}</p>
+    ${q.options.map((o,oi)=>`
+      <label class="opt" data-q="${q.id}" data-oi="${oi}">
+        <input type="radio" name="q${q.id}" value="${oi}"> ${o}
+      </label>`).join('')}
+  </div>
+`).join('');
+
+document.querySelectorAll('.opt input').forEach(inp=>{
+  inp.addEventListener('change', e=>{
+    const qid = +e.target.name.slice(1);
+    answers[qid] = +e.target.value;
+    document.querySelectorAll(`.opt[data-q="${qid}"]`).forEach(l=>l.classList.toggle('sel', +l.dataset.oi===answers[qid]));
+    document.getElementById('qc'+qid).classList.add('answered');
+    updateCounters();
+  });
+});
+
+function updateCounters(){
+  const a = Object.keys(answers).length;
+  document.getElementById('cAns').textContent = a;
+  document.getElementById('cRem').textContent = qs.length - a;
+  document.getElementById('bar').style.width = (a/qs.length*100)+'%';
+}
+
+// Timer
+let remain = exam.duration * 60;
+const timerEl = document.getElementById('timer');
+function tick(){
+  const m = Math.floor(remain/60), s = remain%60;
+  timerEl.textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  if(remain <= 60) timerEl.classList.add('warn');
+  if(remain <= 0){ clearInterval(iv); UI.toast('Time up! Auto-submitting...','error'); submit(true); return; }
+  remain--;
+}
+tick();
+const iv = setInterval(tick, 1000);
+
+function submit(auto){
+  if(!auto && Object.keys(answers).length < qs.length){
+    if(!confirm(`You have ${qs.length - Object.keys(answers).length} unanswered questions. Submit anyway?`)) return;
+  }
+  clearInterval(iv);
+  let score = 0;
+  qs.forEach(q=>{ if(answers[q.id]===q.correct) score += q.points; });
+  const db = DB.get();
+  db.examRecords.push({id:Date.now(),examId,studentId:user.id,score,answers,graded:true,reviewed:false,submittedAt:new Date().toLocaleString()});
+  DB.commit();
+  const pass = score >= exam.passingMarks;
+  document.getElementById('shell').innerHTML = `<div class="result">
+    <h2>${pass?'🎉 Passed!':'📋 Submitted'}</h2>
+    <div class="score">${score} / ${exam.totalMarks}</div>
+    <p style="color:var(--muted)">Passing mark: ${exam.passingMarks}</p>
+    <p><span class="badge ${pass?'green':'red'}">${pass?'PASSED':'FAILED'}</span></p>
+    <a class="btn" href="./student.html" style="margin-top:20px">← Back to Dashboard</a>
+  </div>`;
+}
+
+document.getElementById('submit').onclick = ()=>submit(false);
+document.getElementById('quit').onclick = ()=>{ if(confirm('Quit without submitting? Your answers will be lost.')) location.href='./student.html'; };
+window.addEventListener('beforeunload', e=>{ if(Object.keys(answers).length){ e.preventDefault(); e.returnValue=''; }});
+</script>
+</body></html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TeachFlow</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="center">
+  <div class="auth-card">
+    <h1>🎓 TeachFlow</h1>
+    <p class="sub">Sign in to your dashboard</p>
+
+    <div class="field"><label>Email</label><input id="email" class="input" placeholder="user@example.com"></div>
+    <div class="field"><label>Password</label><input id="password" type="password" class="input" placeholder="••••••"></div>
+
+    <button class="btn full" id="btnLogin">Sign In</button>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+const dash = {
+  super_admin: 'dashboards/super-admin.html',
+  center_owner: 'dashboards/center-owner.html',
+  center_admin: 'dashboards/center-admin.html',
+  teacher: 'dashboards/teacher.html',
+  assistant: 'dashboards/assistant.html',
+  student: 'dashboards/student.html',
+  parent: 'dashboards/parent.html',
+};
+
+document.getElementById('btnLogin').onclick = ()=>{
+  const email = document.getElementById('email').value.trim();
+  const pwd = document.getElementById('password').value;
+  if(!email||!pwd) return UI.toast('Enter email & password','error');
+  const u = Auth.login(email, pwd);
+  if(!u) return UI.toast('Invalid credentials','error');
+  UI.toast('Welcome '+u.name);
+  setTimeout(()=> window.location.href = dash[u.role] || 'index.html', 500);
+};
+</script>
+</body>
+</html>

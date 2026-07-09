@@ -1,0 +1,47 @@
+@using Center_Education_Management.Model
+@using Center_Education_Management.view_models
+@model StudentLeadWizardVM
+@{
+    ViewData["Title"] = "اختر السنتر";
+    var centers = ViewBag.Centers as List<Center> ?? new List<Center>();
+}
+
+<section class="container section">
+  <div class="section-title"><h2>اختر السنتر الأقرب لك</h2><div class="dash"></div></div>
+
+  <div class="contact-card" style="max-width:640px;margin:0 auto">
+    <div class="contact-right" style="grid-column:1/-1">
+      <div asp-validation-summary="All" style="color:#c0392b;margin-bottom:14px"></div>
+
+      <form asp-controller="StudentLead" asp-action="ChooseCenter" method="post">
+        <input type="hidden" asp-for="Name" />
+        <input type="hidden" asp-for="Phone" />
+        <input type="hidden" asp-for="Email" />
+        <input type="hidden" asp-for="Grade" />
+
+        @if (!centers.Any())
+        {
+          <p style="text-align:center;color:var(--muted)">لا يوجد سناتر معتمدة حاليًا</p>
+        }
+        else
+        {
+          <div class="centers-list">
+            @foreach (var c in centers)
+            {
+              <label class="center-item" style="cursor:pointer">
+                <input type="radio" name="CenterId" value="@c.Id" required style="margin-left:10px" />
+                <div class="ci-ico"><i class="icon-building-2"></i></div>
+                <div class="ci-body">
+                  <p class="ci-name">@c.Name</p>
+                  <p class="ci-meta"><i class="icon-map-pin"></i> @c.City · @c.Address</p>
+                </div>
+              </label>
+            }
+          </div>
+        }
+
+        <button type="submit" class="btn btn-primary submit full" style="margin-top:16px"><i class="icon-send"></i> التالي: اختر المدرس</button>
+      </form>
+    </div>
+  </div>
+</section>

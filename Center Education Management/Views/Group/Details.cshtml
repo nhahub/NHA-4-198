@@ -1,0 +1,39 @@
+﻿@model Center_Education_Management.Model.Group
+
+@{
+    ViewData["Title"] = "Group Details";
+}
+
+<h2>Group Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Name)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Name)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.MaxCapacity)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.MaxCapacity)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Price)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Price)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ScheduleJson)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.ScheduleJson)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Status)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CreatedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CreatedAt)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.TeacherId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.TeacherId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SubjectId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.SubjectId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SeasonId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.SeasonId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.CenterId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.CenterId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.ClassroomId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.ClassroomId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StageId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StageId)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

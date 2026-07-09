@@ -1,0 +1,34 @@
+﻿@model Center_Education_Management.Model.Attendance
+
+@{
+    ViewData["Title"] = "Delete Attendance";
+}
+
+<h2>Delete Attendance</h2>
+
+<div class="alert alert-danger">Are you sure you want to delete this item?</div>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Status)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.AttendanceMode)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.AttendanceMode)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.RecordedByID)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.RecordedByID)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StudentId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StudentId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.SessionId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.SessionId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.QRTokenId)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.QRTokenId)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.RecordedAt)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.RecordedAt)</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,64 @@
+﻿@model Center_Education_Management.Model.SubscriptionPlan
+
+@{
+    ViewData["Title"] = "Create SubscriptionPlan";
+}
+
+<h2>Create SubscriptionPlan</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" type="text" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PriceMonthly" class="form-label"></label>
+                        <input asp-for="PriceMonthly" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="PriceMonthly" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PriceYearly" class="form-label"></label>
+                        <input asp-for="PriceYearly" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="PriceYearly" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PriceSemester" class="form-label"></label>
+                        <input asp-for="PriceSemester" class="form-control" type="number" step="any" />
+                        <span asp-validation-for="PriceSemester" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="MaxStudents" class="form-label"></label>
+                        <input asp-for="MaxStudents" class="form-control" type="number" />
+                        <span asp-validation-for="MaxStudents" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="MaxTeachers" class="form-label"></label>
+                        <input asp-for="MaxTeachers" class="form-control" type="number" />
+                        <span asp-validation-for="MaxTeachers" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="MaxGroups" class="form-label"></label>
+                        <input asp-for="MaxGroups" class="form-control" type="number" />
+                        <span asp-validation-for="MaxGroups" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="StorageGB" class="form-label"></label>
+                        <input asp-for="StorageGB" class="form-control" type="number" />
+                        <span asp-validation-for="StorageGB" class="text-danger"></span>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                        <label asp-for="IsActive" class="form-label"></label>
+                        <span asp-validation-for="IsActive" class="text-danger"></span>
+                    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

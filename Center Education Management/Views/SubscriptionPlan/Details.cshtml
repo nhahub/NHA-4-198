@@ -1,0 +1,33 @@
+﻿@model Center_Education_Management.Model.SubscriptionPlan
+
+@{
+    ViewData["Title"] = "SubscriptionPlan Details";
+}
+
+<h2>SubscriptionPlan Details</h2>
+
+<dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Id)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Id)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Name)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Name)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.PriceMonthly)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.PriceMonthly)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.PriceYearly)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.PriceYearly)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.PriceSemester)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.PriceSemester)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.MaxStudents)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.MaxStudents)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.MaxTeachers)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.MaxTeachers)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.MaxGroups)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.MaxGroups)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.StorageGB)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.StorageGB)</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.IsActive)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.IsActive)</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

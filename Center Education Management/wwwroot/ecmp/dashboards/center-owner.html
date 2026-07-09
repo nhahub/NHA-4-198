@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Center Owner · ECMP</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../css/style.css"></head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><h2>🏢 Center Owner</h2><small>Owner Portal</small></div>
+    <nav class="nav">
+      <a href="#" data-page="overview">📊 <span>Overview</span></a>
+      <a href="#" data-page="profile">👤 <span>Center Profile</span></a>
+      <a href="#" data-page="subscription">💎 <span>Subscription</span></a>
+      <a href="#" data-page="admins">🛠️ <span>Center Admins</span></a>
+      <a href="#" data-page="payments">💳 <span>Payments</span></a>
+      <a href="#" data-page="analytics">📈 <span>Analytics</span></a>
+    </nav>
+    <button class="logout">🚪 Logout</button>
+  </aside>
+  <main class="main">
+    <div id="topbarSlot"></div>
+    <div class="content">
+      <section id="page-overview" class="page">
+        <div class="stats" id="stats"></div>
+        <div class="card"><h3>Welcome back, <span id="ownerName"></span></h3>
+          <p style="color:var(--muted)">Here's a snapshot of your educational center performance.</p></div>
+      </section>
+
+      <section id="page-profile" class="page">
+        <div class="card"><h3>Center Information</h3>
+          <div class="grid-2">
+            <div class="field"><label>Center Name</label><input class="input" id="pName"></div>
+            <div class="field"><label>Email</label><input class="input" id="pEmail"></div>
+            <div class="field"><label>Phone</label><input class="input" id="pPhone"></div>
+            <div class="field"><label>Government</label><input class="input" id="pGov"></div>
+            <div class="field"><label>City</label><input class="input" id="pCity"></div>
+            <div class="field"><label>Address</label><input class="input" id="pAddr"></div>
+          </div>
+          <button class="btn" id="saveProfile">💾 Save Changes</button>
+        </div>
+      </section>
+
+      <section id="page-subscription" class="page">
+        <div class="card"><h3>Current Plan: <span id="curPlan" style="color:var(--accent)"></span></h3>
+          <p style="color:var(--muted)">Choose a plan that fits your center.</p>
+          <div class="plans" id="plansList"></div>
+        </div>
+      </section>
+
+      <section id="page-admins" class="page">
+        <div class="card"><h3>Center Admins <button class="btn sm" id="addAdminBtn" style="float:right">+ Add Admin</button></h3>
+          <div id="adminsTable"></div></div>
+      </section>
+
+      <section id="page-payments" class="page">
+        <div class="card"><h3>Payment History</h3><div id="payTable"></div>
+          <button class="btn" id="payNowBtn" style="margin-top:14px">💳 Pay Subscription</button>
+        </div>
+      </section>
+
+      <section id="page-analytics" class="page">
+        <div class="card"><h3>Analytics</h3>
+          <div class="stats" id="anaStats"></div>
+          <div style="margin-top:14px"><canvas id="chart" width="600" height="200" style="background:#0b1220;border-radius:10px;width:100%"></canvas></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+const user = Auth.require('center_owner');
+document.getElementById('topbarSlot').outerHTML = topbar(user);
+document.getElementById('ownerName').textContent = user.name;
+
+function render(){
+  const d = DB.get();
+  const c = d.centers.find(x=>x.id===user.centerId) || d.centers[0];
+  const students = d.students.filter(s=>s.centerId===c.id);
+  const teachers = d.teachers.filter(t=>t.centerId===c.id);
+  const groups = d.groups.filter(g=>g.centerId===c.id);
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="lbl">Students</div><div class="val">${students.length}</div></div>
+    <div class="stat"><div class="lbl">Teachers</div><div class="val">${teachers.length}</div></div>
+    <div class="stat"><div class="lbl">Groups</div><div class="val">${groups.length}</div></div>
+    <div class="stat"><div class="lbl">Plan</div><div class="val">${c.plan}</div></div>
+    <div class="stat"><div class="lbl">Status</div><div class="val">${c.status}</div></div>
+  `;
+
+  ['Name','Email','Phone','Gov','City','Addr'].forEach(k=>{
+    const map = {Name:'name',Email:'email',Phone:'phone',Gov:'government',City:'city',Addr:'address'};
+    document.getElementById('p'+k).value = c[map[k]] || '';
+  });
+
+  document.getElementById('curPlan').textContent = c.plan;
+  document.getElementById('plansList').innerHTML = d.plans.map(p=>`
+    <div class="plan ${p.name===c.plan?'popular':''}">
+      <h4>${p.name}</h4>
+      <div class="price">EGP ${p.priceMonthly}</div>
+      <ul><li>${p.maxStudents} Students</li><li>${p.maxTeachers} Teachers</li><li>${p.maxGroups} Groups</li><li>${p.storageGB} GB</li></ul>
+      <button class="btn ${p.name===c.plan?'ghost':''} full" onclick="selectPlan('${p.name}')">${p.name===c.plan?'Current Plan':'Select Plan'}</button>
+    </div>`).join('');
+
+  const admins = d.users.filter(u=>u.role==='center_admin' && u.centerId===c.id);
+  document.getElementById('adminsTable').innerHTML = adminTable(admins);
+
+  document.getElementById('payTable').innerHTML = `<table><thead><tr><th>Date</th><th>Plan</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+    <tr><td>2026-05-01</td><td>${c.plan}</td><td>EGP ${d.plans.find(p=>p.name===c.plan)?.priceMonthly||0}</td><td><span class="badge green">Paid</span></td></tr>
+    <tr><td>2026-04-01</td><td>${c.plan}</td><td>EGP ${d.plans.find(p=>p.name===c.plan)?.priceMonthly||0}</td><td><span class="badge green">Paid</span></td></tr>
+  </tbody></table>`;
+
+  document.getElementById('anaStats').innerHTML = `
+    <div class="stat"><div class="lbl">Active Students</div><div class="val">${students.length}</div></div>
+    <div class="stat"><div class="lbl">Sessions This Month</div><div class="val">${d.sessions.length}</div></div>
+    <div class="stat"><div class="lbl">Revenue (EGP)</div><div class="val">${d.payments.filter(p=>p.status==='paid').reduce((s,p)=>s+p.amount,0)}</div></div>
+  `;
+  drawChart();
+}
+
+function adminTable(admins){
+  if(!admins.length) return '<p style="color:var(--muted)">No admins yet.</p>';
+  return `<table><thead><tr><th>Name</th><th>Email</th><th>Actions</th></tr></thead><tbody>${
+    admins.map(a=>`<tr><td>${a.name}</td><td>${a.email}</td><td><button class="btn sm danger" onclick="delAdmin(${a.id})">Remove</button></td></tr>`).join('')
+  }</tbody></table>`;
+}
+
+function drawChart(){
+  const cv = document.getElementById('chart'); if(!cv) return;
+  const ctx = cv.getContext('2d');
+  const w=cv.width,h=cv.height; ctx.clearRect(0,0,w,h);
+  const data = [12,18,15,22,28,24,32];
+  const max = 35;
+  ctx.strokeStyle = '#6366f1'; ctx.lineWidth=3; ctx.beginPath();
+  data.forEach((v,i)=>{ const x = i*(w/(data.length-1)); const y = h - (v/max)*(h-30) - 10; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+  ctx.stroke();
+  ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif';
+  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach((d,i)=> ctx.fillText(d, i*(w/6)-10, h-2));
+}
+
+window.selectPlan = (name)=>{
+  UI.confirm('Switch to '+name+' plan? Super admin will activate.', ()=>{
+    const d = DB.get(); const c = d.centers.find(x=>x.id===user.centerId);
+    c.plan = name; DB.commit(); UI.toast('Plan request sent. Awaiting activation.'); render();
+  });
+};
+
+document.getElementById('saveProfile').onclick = ()=>{
+  const d = DB.get(); const c = d.centers.find(x=>x.id===user.centerId);
+  c.name = document.getElementById('pName').value;
+  c.email = document.getElementById('pEmail').value;
+  c.phone = document.getElementById('pPhone').value;
+  c.government = document.getElementById('pGov').value;
+  c.city = document.getElementById('pCity').value;
+  c.address = document.getElementById('pAddr').value;
+  DB.commit(); UI.toast('Profile saved');
+};
+
+document.getElementById('addAdminBtn').onclick = ()=>{
+  UI.modal('Add Center Admin',`
+    <div class="field"><label>Name</label><input class="input" id="an"></div>
+    <div class="field"><label>Email</label><input class="input" id="ae"></div>
+    <div class="field"><label>Phone</label><input class="input" id="ap"></div>
+    <div class="field"><label>Password</label><input class="input" id="apw" value="123"></div>
+    <label style="color:var(--muted);font-size:13px">Permissions:</label>
+    <div class="grid-2" style="margin-top:6px">
+      <label class="check"><input type="checkbox" checked> Manage Teachers</label>
+      <label class="check"><input type="checkbox" checked> Manage Students</label>
+      <label class="check"><input type="checkbox"> Manage Payments</label>
+      <label class="check"><input type="checkbox"> View Reports</label>
+    </div>`, m=>{
+    const d = DB.get();
+    d.users.push({id:Date.now(),role:'center_admin',name:m.querySelector('#an').value,email:m.querySelector('#ae').value,phone:m.querySelector('#ap').value,password:m.querySelector('#apw').value,centerId:user.centerId});
+    DB.commit(); UI.toast('Admin added'); render();
+  });
+};
+
+window.delAdmin = (id)=>{
+  UI.confirm('Remove admin?', ()=>{ const d = DB.get(); d.users = d.users.filter(u=>u.id!==id); DB.commit(); UI.toast('Removed'); render(); });
+};
+
+document.getElementById('payNowBtn').onclick = ()=> UI.toast('Payment processed successfully');
+
+setupNav();
+render();
+</script>
+</body></html>

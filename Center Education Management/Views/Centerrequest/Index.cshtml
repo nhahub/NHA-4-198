@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Center_Education_Management.Model.Centerrequest>
+
+@{
+    ViewData["Title"] = "Centerrequest List";
+}
+
+<h2>Centerrequest</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">+ Create New</a>
+</p>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Id)</th>
+            <th>@Html.DisplayNameFor(m => m.CenterName)</th>
+            <th>@Html.DisplayNameFor(m => m.ContactPhone)</th>
+            <th>@Html.DisplayNameFor(m => m.Address)</th>
+            <th>@Html.DisplayNameFor(m => m.City)</th>
+            <th>@Html.DisplayNameFor(m => m.ReviewedById)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+                <td>@Html.DisplayFor(m => item.Id)</td>
+                <td>@Html.DisplayFor(m => item.CenterName)</td>
+                <td>@Html.DisplayFor(m => item.ContactPhone)</td>
+                <td>@Html.DisplayFor(m => item.Address)</td>
+                <td>@Html.DisplayFor(m => item.City)</td>
+                <td>@Html.DisplayFor(m => item.ReviewedById)</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
