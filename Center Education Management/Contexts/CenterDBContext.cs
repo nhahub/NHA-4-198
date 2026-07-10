@@ -11,6 +11,7 @@ namespace Center_Education_Management.EFcore
 {
     public class CenterDBContext : DbContext
     {
+        // dbcontex
         public CenterDBContext(DbContextOptions<CenterDBContext> options) : base(options)
         {
         }
