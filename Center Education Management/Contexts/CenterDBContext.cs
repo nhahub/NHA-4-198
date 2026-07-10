@@ -9,10 +9,8 @@ using System.Threading.Tasks;
 
 namespace Center_Education_Management.EFcore
 {
-    // ⚠️ لازم تكون public مش internal عشان الـ Dependency Injection والـ Repository Layer يقدروا يوصلولها
     public class CenterDBContext : DbContext
     {
-        // ✅ الكونستركتور ده ضروري عشان AddDbContext في Program.cs يقدر يمرر الـ Options بتاعته
         public CenterDBContext(DbContextOptions<CenterDBContext> options) : base(options)
         {
         }
