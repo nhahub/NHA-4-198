@@ -15,8 +15,9 @@ namespace Center_Education_Management
 
             // DbContext
             builder.Services.AddDbContext<CenterDBContext>(options =>
-     options.UseSqlServer("DefaultConnection")
-     .UseLazyLoadingProxies());
+                 options.UseSqlServer(
+                     builder.Configuration.GetConnectionString("DefaultConnection"))
+                 .UseLazyLoadingProxies());
 
             // Unit Of Work
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
