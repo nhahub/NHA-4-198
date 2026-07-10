@@ -8,6 +8,7 @@ namespace Center_Education_Management.EFcore
     {
         public CenterDBContext CreateDbContext(string[] args)
         {
+            // conection string
             IConfiguration configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
