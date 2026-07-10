@@ -21,7 +21,7 @@ namespace Center_Education_Management.EFcore
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=ahmed;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+                optionsBuilder.UseSqlServer("DefaultConnection");
                 optionsBuilder.UseLazyLoadingProxies(true);
             }
         }
