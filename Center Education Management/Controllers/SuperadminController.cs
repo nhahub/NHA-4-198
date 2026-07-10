@@ -1,4 +1,4 @@
-﻿using Center_Education_Management.Models;
+﻿using Center_Education_Management.Model;
 using Center_Education_Management.Repository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +19,11 @@ namespace Center_Education_Management.Controllers
             var items = await _unitOfWork.Superadmins.GetAllAsync();
             return View(items);
         }
-
+        public async Task<IActionResult> CenterRequests()
+        {
+            var requests = await _unitOfWork.Centerrequests.GetAllAsync();
+            return View(requests);
+        }
         // GET: Superadmin/Details/5
         public async Task<IActionResult> Details(int id)
         {

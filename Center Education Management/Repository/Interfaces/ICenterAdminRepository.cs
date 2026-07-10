@@ -1,4 +1,4 @@
-﻿﻿using Center_Education_Management.Models;
+﻿﻿using Center_Education_Management.Model;
 
 namespace Center_Education_Management.Repository.Interfaces
 {

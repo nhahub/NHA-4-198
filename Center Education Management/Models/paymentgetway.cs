@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Center_Education_Management.Models
+namespace Center_Education_Management.Model
 {
     public class Paymentgetway
     {

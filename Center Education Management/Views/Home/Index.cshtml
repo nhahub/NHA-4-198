@@ -25,6 +25,65 @@
   </div>
 </section>
 
+<script>
+(function(){
+  document.addEventListener('DOMContentLoaded', function(){
+  const key = 'ecmp_db_v2';
+  const read = () => {
+    try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
+  };
+  const write = data => localStorage.setItem(key, JSON.stringify(data));
+  const today = () => new Date().toISOString().slice(0,10);
+
+  const ownerForm = document.getElementById('form-owner');
+  if(ownerForm){
+    ownerForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const fd = new FormData(ownerForm);
+      const data = read();
+      data.centerRequests = Array.isArray(data.centerRequests) ? data.centerRequests : [];
+      data.centerRequests.push({
+        id: Date.now(),
+        centerName: fd.get('CenterName'),
+        contactPhone: fd.get('ContactPhone'),
+        city: fd.get('City'),
+        address: fd.get('Address'),
+        state: 'waiting',
+        createdAt: today()
+      });
+      write(data);
+      ownerForm.reset();
+      alert('تم إرسال طلب السنتر للسوبر أدمن. افتح داشبورد Super Admin ثم Center Requests.');
+    });
+  }
+
+  const studentForm = document.getElementById('form-student');
+  if(studentForm){
+    studentForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const fd = new FormData(studentForm);
+      const data = read();
+      data.studentLeads = Array.isArray(data.studentLeads) ? data.studentLeads : [];
+      data.studentLeads.push({
+        id: Date.now(),
+        name: fd.get('Name'),
+        phone: fd.get('Phone'),
+        email: fd.get('Email'),
+        stage: fd.get('InterestedStageOrSubject'),
+        subject: fd.get('InterestedStageOrSubject'),
+        status: 'new',
+        centerId: 1,
+        createdAt: today()
+      });
+      write(data);
+      studentForm.reset();
+      alert('تم إرسال تسجيل الطالب لأدمن السنتر.');
+    });
+  }
+  });
+})();
+</script>
+
 <section class="container stats">
   @foreach (var s in Model.Stats)
   {

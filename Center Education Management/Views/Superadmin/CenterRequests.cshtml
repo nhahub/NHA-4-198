@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Center_Education_Management.Model.Centerrequest>
+
+@{
+    ViewData["Title"] = "Center Requests";
+}
+
+<h2>طلبات إنشاء السناتر</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>اسم السنتر</th>
+            <th>رقم الهاتف</th>
+            <th>العنوان</th>
+            <th>المدينة</th>
+            <th>الحالة</th>
+            <th>تاريخ الطلب</th>
+            <th>الإجراءات</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CenterName</td>
+                <td>@item.ContactPhone</td>
+                <td>@item.Address</td>
+                <td>@item.City</td>
+                <td>@item.State</td>
+                <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+
+                <td>
+                    <a asp-controller="Centerrequest"
+                       asp-action="Details"
+                       asp-route-id="@item.Id"
+                       class="btn btn-info btn-sm">
+                        Details
+                    </a>
+
+                    <a asp-controller="Centerrequest"
+                       asp-action="Edit"
+                       asp-route-id="@item.Id"
+                       class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

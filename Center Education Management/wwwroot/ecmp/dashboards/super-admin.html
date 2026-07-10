@@ -52,6 +52,7 @@ const user = Auth.require('super_admin');
 document.getElementById('topbarSlot').outerHTML = topbar(user);
 
 let dashboardData = null;
+let usingServerData = false;
 
 function buildSuperAdminDataFromStore(){
   const d = DB.get();
@@ -77,24 +78,34 @@ function buildSuperAdminDataFromStore(){
     }
   };
 }
+    async function loadDashboard() {
+        try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 3000);
 
-async function loadDashboard(){
-  if(!location.search.includes('serverData=1')){
-    dashboardData = buildSuperAdminDataFromStore();
-    return;
-  }
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 1500);
-    const res = await fetch('/api/dashboard/super-admin', { headers: { 'Accept': 'application/json' }, signal: controller.signal });
-    clearTimeout(timer);
-    if(!res.ok) throw new Error('Could not load dashboard data');
-    dashboardData = await res.json();
-  } catch (err) {
-    dashboardData = buildSuperAdminDataFromStore();
-    UI.toast('Showing available dashboard data', 'error');
-  }
-}
+            const res = await fetch('/api/dashboard/super-admin', {
+                headers: {
+                    'Accept': 'application/json'
+                },
+                signal: controller.signal
+            });
+
+            clearTimeout(timer);
+
+            if (!res.ok)
+                throw new Error('Could not load dashboard data');
+
+            dashboardData = await res.json();
+            usingServerData = true;
+
+        } catch (err) {
+
+            dashboardData = buildSuperAdminDataFromStore();
+            usingServerData = false;
+
+            UI.toast('Showing available dashboard data', 'error');
+        }
+    }
 
 function table(cols, rows){
   if(!rows.length) return '<p style="color:var(--muted)">No data.</p>';
@@ -168,45 +179,146 @@ window.viewReq = function(id){
   UI.modal('Request Details', `<p><b>Center:</b> ${r.centerName}</p><p><b>Phone:</b> ${r.contactPhone}</p><p><b>Address:</b> ${r.address}, ${r.city}</p><p><b>Status:</b> ${r.state}</p><p><b>Date:</b> ${r.createdAt}</p>`);
 };
 
-window.approveReq = async function(id){
-  if(!location.search.includes('serverData=1')){
-    const r = dashboardData.requests.find(x => x.id === id);
-    if(r) r.state = 'approved';
-    UI.toast('Request approved');
-    render();
-    return;
-  }
-  const res = await fetch(`/api/dashboard/center-requests/${id}/approve`, { method: 'POST' });
-  if(!res.ok) return UI.toast('Approve failed', 'error');
-  const account = await res.json().catch(() => null);
-  UI.toast(account ? `Approved. Owner login: ${account.email} / ${account.password}` : 'Approved');
-  await loadDashboard();
-  render();
-};
+    window.approveReq = async function (id) {
 
-window.rejectReq = async function(id){
-  if(!confirm('Reject this request?')) return;
-  if(!location.search.includes('serverData=1')){
-    const r = dashboardData.requests.find(x => x.id === id);
-    if(r) r.state = 'rejected';
-    UI.toast('Request rejected');
-    render();
-    return;
-  }
-  const res = await fetch(`/api/dashboard/center-requests/${id}/reject`, { method: 'POST' });
-  if(!res.ok) return UI.toast('Reject failed', 'error');
-  UI.toast('Request rejected');
-  await loadDashboard();
-  render();
-};
+        if (!usingServerData) {
 
-setupNav();
-loadDashboard()
-  .then(render)
-  .catch(err => {
-    console.error(err);
-    document.querySelector('.content').innerHTML = `<div class="card"><h3>Dashboard error</h3><p style="color:var(--danger)">${err.message}</p></div>`;
-  });
+            const d = DB.get();
+            const r = d.centerRequests.find(x => x.id === id);
+
+            if (!r) return;
+
+            if (r.state !== 'approved') {
+
+                const ownerId = Date.now();
+                const centerId = ownerId + 1;
+
+                const ownerEmail = r.ownerEmail || `owner-${centerId}@center.local`;
+                const ownerName = r.ownerName || `${r.centerName} Owner`;
+
+                d.users.push({
+                    id: ownerId,
+                    role: 'center_owner',
+                    email: ownerEmail,
+                    password: '123',
+                    name: ownerName,
+                    centerId
+                });
+
+                d.centers.push({
+                    id: centerId,
+                    name: r.centerName,
+                    email: ownerEmail,
+                    phone: r.contactPhone,
+                    address: r.address,
+                    city: r.city,
+                    government: r.city,
+                    status: 'active',
+                    plan: 'Free',
+                    ownerId,
+                    createdAt: new Date().toISOString().slice(0, 10)
+                });
+
+                r.state = 'approved';
+                r.approvedCenterId = centerId;
+                r.approvedOwnerId = ownerId;
+
+                DB.commit();
+            }
+
+            dashboardData = buildSuperAdminDataFromStore();
+
+            UI.toast(`Approved. Owner login: ${(r.ownerEmail || `owner-${r.approvedCenterId}@center.local`)} / 123`);
+
+            render();
+            return;
+        }
+
+        const res = await fetch(`/api/dashboard/center-requests/${id}/approve`, {
+            method: 'POST'
+        });
+
+        if (!res.ok)
+            return UI.toast('Approve failed', 'error');
+
+        const account = await res.json().catch(() => null);
+
+        UI.toast(
+            account
+                ? `Approved. Owner login: ${account.email} / ${account.password}`
+                : 'Approved'
+        );
+
+        await loadDashboard();
+        render();
+    };
+    window.rejectReq = async function (id) {
+
+        if (!confirm('Reject this request?'))
+            return;
+
+        if (!usingServerData) {
+
+            const d = DB.get();
+
+            const r = d.centerRequests.find(x => x.id === id);
+
+            if (r)
+                r.state = 'rejected';
+
+            DB.commit();
+
+            dashboardData = buildSuperAdminDataFromStore();
+
+            UI.toast('Request rejected');
+
+            render();
+
+            return;
+        }
+
+        const res = await fetch(`/api/dashboard/center-requests/${id}/reject`, {
+            method: 'POST'
+        });
+
+        if (!res.ok)
+            return UI.toast('Reject failed', 'error');
+
+        UI.toast('Request rejected');
+
+        await loadDashboard();
+
+        render();
+    };
+
+    setupNav();
+
+    window.addEventListener('storage', e => {
+
+        if (e.key === 'ecmp_db_v2' && !usingServerData) {
+
+            DB._d = null;
+
+            dashboardData = buildSuperAdminDataFromStore();
+
+            render();
+        }
+    });
+
+    loadDashboard()
+        .then(render)
+        .catch(err => { 
+
+            console.error(err);
+
+            document.querySelector('.content').innerHTML = `
+            <div class="card">
+                <h3>Dashboard error</h3>
+                <p style="color:var(--danger)">
+                    ${err.message}
+                </p>
+            </div>`;
+        });
 </script>
 </body>
 </html>

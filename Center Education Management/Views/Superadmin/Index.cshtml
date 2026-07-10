@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Center_Education_Management.Models.Superadmin>
+﻿@model IEnumerable<Center_Education_Management.Model.Superadmin>
 
 @{
     ViewData["Title"] = "Superadmin List";
@@ -38,6 +38,11 @@
                 <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
             </td>
         </tr>
+            <a asp-controller="Superadmin"
+               asp-action="CenterRequests"
+               class="btn btn-primary">
+                طلبات إنشاء السناتر
+            </a>
 }
     </tbody>
 </table>

@@ -7,16 +7,64 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="center">
-  <div class="auth-card">
-    <h1>🎓 TeachFlow</h1>
-    <p class="sub">Sign in to your dashboard</p>
+<div class="auth-shell">
+  <section class="auth-hero">
+    <div class="brand-mark">TeachFlow</div>
+    <h1>Center education management, from first request to daily operations.</h1>
+    <p>Center owners apply here, super admins approve centers, then each center runs independently with its own owner, admins, teachers, students, parents, groups, attendance, exams, assignments, and payments.</p>
+    <div class="auth-flow">
+      <span>Owner request</span>
+      <span>Super admin approval</span>
+      <span>Center workspace</span>
+      <span>Student learning</span>
+    </div>
+  </section>
 
-    <div class="field"><label>Email</label><input id="email" class="input" placeholder="user@example.com"></div>
-    <div class="field"><label>Password</label><input id="password" type="password" class="input" placeholder="••••••"></div>
+  <section class="auth-panel">
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-auth-tab="login">Sign in</button>
+      <button class="auth-tab" data-auth-tab="owner">New center</button>
+      <button class="auth-tab" data-auth-tab="student">Student request</button>
+    </div>
 
-    <button class="btn full" id="btnLogin">Sign In</button>
-  </div>
+    <div class="auth-card pane active" id="pane-login">
+      <h2>Sign in</h2>
+      <p class="sub">Use an existing dashboard account.</p>
+      <div class="field"><label>Email</label><input id="email" class="input" placeholder="user@example.com"></div>
+      <div class="field"><label>Password</label><input id="password" type="password" class="input" placeholder="123"></div>
+      <button class="btn full" id="btnLogin">Sign In</button>
+      <button class="btn ghost full" id="resetDemo" style="margin-top:10px">Reset demo data</button>
+    </div>
+
+    <div class="auth-card pane" id="pane-owner">
+      <h2>Request a center</h2>
+      <p class="sub">This request appears for the super admin to approve or reject.</p>
+      <div class="grid-2">
+        <div class="field"><label>Center name</label><input id="orCenter" class="input" placeholder="Bright Future Center"></div>
+        <div class="field"><label>Owner name</label><input id="orOwner" class="input" placeholder="Ahmed Ali"></div>
+        <div class="field"><label>Owner email</label><input id="orEmail" class="input" type="email" placeholder="owner@example.com"></div>
+        <div class="field"><label>Phone</label><input id="orPhone" class="input" placeholder="01000000000"></div>
+        <div class="field"><label>City</label><input id="orCity" class="input" placeholder="Cairo"></div>
+        <div class="field"><label>Address</label><input id="orAddress" class="input" placeholder="Street, area"></div>
+      </div>
+      <button class="btn full" id="btnOwnerRequest">Send center request</button>
+    </div>
+
+    <div class="auth-card pane" id="pane-student">
+      <h2>Student registration</h2>
+      <p class="sub">The selected center admin will receive this as a student lead.</p>
+      <div class="grid-2">
+        <div class="field"><label>Student name</label><input id="srName" class="input" placeholder="Student full name"></div>
+        <div class="field"><label>Phone</label><input id="srPhone" class="input" placeholder="01000000000"></div>
+        <div class="field"><label>Email</label><input id="srEmail" class="input" type="email" placeholder="student@example.com"></div>
+        <div class="field"><label>Parent phone</label><input id="srParentPhone" class="input" placeholder="Parent phone"></div>
+        <div class="field"><label>Stage</label><input id="srStage" class="input" placeholder="Secondary 3"></div>
+        <div class="field"><label>Subject</label><input id="srSubject" class="input" placeholder="Mathematics"></div>
+      </div>
+      <div class="field"><label>Center</label><select id="srCenter"></select></div>
+      <button class="btn full" id="btnStudentRequest">Send student request</button>
+    </div>
+  </section>
 </div>
 
 <script src="js/app.js"></script>
@@ -31,6 +79,23 @@ const dash = {
   parent: 'dashboards/parent.html',
 };
 
+function showPane(name){
+  document.querySelectorAll('.auth-tab').forEach(b=>b.classList.toggle('active', b.dataset.authTab===name));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pane-'+name).classList.add('active');
+}
+
+function fillCenters(){
+  const d = DB.get();
+  document.getElementById('srCenter').innerHTML = d.centers
+    .filter(c=>String(c.status).toLowerCase()==='active')
+    .map(c=>`<option value="${c.id}">${c.name} - ${c.city || ''}</option>`)
+    .join('') || '<option value="">No active centers yet</option>';
+}
+
+document.querySelectorAll('.auth-tab').forEach(b=> b.onclick = ()=> showPane(b.dataset.authTab));
+fillCenters();
+
 document.getElementById('btnLogin').onclick = ()=>{
   const email = document.getElementById('email').value.trim();
   const pwd = document.getElementById('password').value;
@@ -39,6 +104,53 @@ document.getElementById('btnLogin').onclick = ()=>{
   if(!u) return UI.toast('Invalid credentials','error');
   UI.toast('Welcome '+u.name);
   setTimeout(()=> window.location.href = dash[u.role] || 'index.html', 500);
+};
+
+document.getElementById('btnOwnerRequest').onclick = ()=>{
+  const d = DB.get();
+  const centerName = document.getElementById('orCenter').value.trim();
+  const ownerName = document.getElementById('orOwner').value.trim();
+  const ownerEmail = document.getElementById('orEmail').value.trim();
+  const contactPhone = document.getElementById('orPhone').value.trim();
+  const city = document.getElementById('orCity').value.trim();
+  const address = document.getElementById('orAddress').value.trim();
+  if(!centerName || !ownerName || !ownerEmail || !contactPhone || !city || !address) return UI.toast('Complete the center request form','error');
+  d.centerRequests.push({
+    id: Date.now(), centerName, ownerName, ownerEmail, contactPhone, city, address,
+    state: 'waiting', createdAt: new Date().toISOString().slice(0,10)
+  });
+  DB.commit();
+  UI.toast('Request sent to super admin');
+  ['orCenter','orOwner','orEmail','orPhone','orCity','orAddress'].forEach(id=>document.getElementById(id).value='');
+  showPane('login');
+};
+
+document.getElementById('btnStudentRequest').onclick = ()=>{
+  const d = DB.get();
+  const centerId = +document.getElementById('srCenter').value;
+  const name = document.getElementById('srName').value.trim();
+  const phone = document.getElementById('srPhone').value.trim();
+  const email = document.getElementById('srEmail').value.trim();
+  const parentPhone = document.getElementById('srParentPhone').value.trim();
+  const stage = document.getElementById('srStage').value.trim();
+  const subject = document.getElementById('srSubject').value.trim();
+  if(!centerId || !name || !phone || !stage || !subject) return UI.toast('Complete the student request form','error');
+  d.studentLeads.push({
+    id: Date.now(), name, phone, email, parentPhone, stage, subject,
+    status: 'new', centerId, createdAt: new Date().toISOString().slice(0,10)
+  });
+  DB.commit();
+  UI.toast('Student request sent to center admin');
+  ['srName','srPhone','srEmail','srParentPhone','srStage','srSubject'].forEach(id=>document.getElementById(id).value='');
+  showPane('login');
+};
+
+document.getElementById('resetDemo').onclick = ()=>{
+  UI.confirm('Reset all demo data?', ()=>{
+    DB.reset();
+    UI.toast('Demo data reset');
+    setTimeout(()=>location.reload(), 400);
+  });
 };
 </script>
 </body>

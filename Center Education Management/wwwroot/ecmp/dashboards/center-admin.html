@@ -53,15 +53,19 @@ function render(){
   const groups = d.groups.filter(g=>g.centerId===cid);
   const students = d.students.filter(s=>s.centerId===cid);
   const leads = d.studentLeads.filter(l=>l.centerId===cid);
+  const groupIds = groups.map(g=>g.id);
+  const studentIds = students.map(s=>s.id);
+  const centerSessions = d.sessions.filter(s=>groupIds.includes(s.groupId));
+  const centerPayments = d.payments.filter(p=>studentIds.includes(p.studentId));
 
   document.getElementById('stats').innerHTML = `
     <div class="stat"><div class="lbl">Teachers</div><div class="val">${teachers.length}</div></div>
     <div class="stat"><div class="lbl">Students</div><div class="val">${students.length}</div></div>
     <div class="stat"><div class="lbl">Groups</div><div class="val">${groups.length}</div></div>
-    <div class="stat"><div class="lbl">Sessions Today</div><div class="val">${d.sessions.filter(s=>s.date===new Date().toISOString().slice(0,10)).length}</div></div>
-    <div class="stat"><div class="lbl">Pending Payments</div><div class="val">${d.payments.filter(p=>p.status==='pending').length}</div></div>
+    <div class="stat"><div class="lbl">Sessions Today</div><div class="val">${centerSessions.filter(s=>s.date===new Date().toISOString().slice(0,10)).length}</div></div>
+    <div class="stat"><div class="lbl">Pending Payments</div><div class="val">${centerPayments.filter(p=>p.status==='pending').length}</div></div>
   `;
-  document.getElementById('todaySes').innerHTML = table(['Group','Time','Status'], d.sessions.map(s=>{
+  document.getElementById('todaySes').innerHTML = table(['Group','Time','Status'], centerSessions.map(s=>{
     const g = d.groups.find(x=>x.id===s.groupId);
     return [g?.name||'—', `${s.date} ${s.startTime}-${s.endTime}`, `<span class="badge ${s.status==='completed'?'green':'amber'}">${s.status}</span>`];
   }));
@@ -94,13 +98,13 @@ function render(){
        <button class="btn sm danger" onclick="delL(${l.id})">Delete</button>`]));
 
   document.getElementById('tSes').innerHTML = table(['Group','Date','Time','Status','Actions'],
-    d.sessions.map(s=>{ const g = d.groups.find(x=>x.id===s.groupId);
+    centerSessions.map(s=>{ const g = d.groups.find(x=>x.id===s.groupId);
       return [g?.name||'—',s.date,`${s.startTime}-${s.endTime}`,`<span class="badge ${s.status==='completed'?'green':'amber'}">${s.status}</span>`,
         `<button class="btn sm danger" onclick="delSes(${s.id})">Cancel</button>`];
     }));
 
   document.getElementById('tP').innerHTML = table(['Student','Type','Amount','Status','Date','Actions'],
-    d.payments.map(p=>{ const s = d.students.find(x=>x.id===p.studentId);
+    centerPayments.map(p=>{ const s = d.students.find(x=>x.id===p.studentId);
       return [s?.name||'—',p.type,'EGP '+p.amount,`<span class="badge ${p.status==='paid'?'green':'amber'}">${p.status}</span>`,p.date,
         p.status==='pending'?`<button class="btn sm success" onclick="markPaid(${p.id})">Mark Paid</button>`:'-'];
     }));
@@ -245,9 +249,12 @@ window.assignG = (id)=>{
 window.convertLead = (id)=>{
   const d = DB.get(); const l = d.studentLeads.find(x=>x.id===id);
   const sid = Date.now();
-  d.students.push({id:sid,name:l.name,email:l.name.replace(/\s/g,'').toLowerCase()+'@stu.com',phone:l.phone,stage:l.stage,parentPhone:'',centerId:cid,groupIds:[]});
+  const studentEmail = l.email || (l.name.replace(/\s/g,'').toLowerCase()+'@stu.com');
+  d.students.push({id:sid,name:l.name,email:studentEmail,phone:l.phone,stage:l.stage,subject:l.subject,parentPhone:l.parentPhone||'',centerId:cid,groupIds:[]});
+  d.users.push({id:sid,role:'student',name:l.name,email:studentEmail,password:'123',centerId:cid});
+  d.users.push({id:sid+1,role:'parent',name:'Parent of '+l.name,email:'parent'+sid+'@parent.com',password:'123',centerId:cid,childId:sid});
   d.studentLeads = d.studentLeads.filter(x=>x.id!==id);
-  DB.commit(); UI.toast('Converted to student'); render();
+  DB.commit(); UI.toast(`Converted. Student login: ${studentEmail} / 123`); render();
 };
 window.markPaid = (id)=>{ const d = DB.get(); const p = d.payments.find(x=>x.id===id); p.status='paid'; DB.commit(); UI.toast('Marked paid'); render(); };
 

@@ -1,6 +1,6 @@
 ﻿using Center_Education_Management.Enums;
 using System.ComponentModel.DataAnnotations;
-namespace Center_Education_Management.Models
+namespace Center_Education_Management.Model
 {
     public class Attendance
     {

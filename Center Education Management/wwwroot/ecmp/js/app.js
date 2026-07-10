@@ -84,11 +84,6 @@ const seed = () => ({
   notifications: [],
 });
 
-// NOTE: By design, business data is NOT persisted across page loads/refreshes.
-// Every full page load starts from a clean seed() so the demo always behaves
-// like "first time" (e.g. exam submissions, added exams/questions, attendance...
-// all reset on refresh). Only the login session survives navigation, so you can
-// move between dashboard pages without being logged out.
 function loadServerData(){
   if(!location.search.includes('serverData=1')) return null;
   try {
@@ -135,10 +130,24 @@ function withDemoFallback(serverData){
   return merged;
 }
 
+function loadLocalData(){
+  try {
+    const stored = JSON.parse(localStorage.getItem(STORE_KEY));
+    if(!stored || typeof stored !== 'object') return null;
+    return withDemoFallback(stored);
+  } catch {
+    return null;
+  }
+}
+
 const DB = {
-  load(){ return withDemoFallback(loadServerData()); },
-  save(d){ /* intentionally no-op: data resets on every page load, see note above */ },
-  reset(){ localStorage.removeItem('ecmp_session'); },
+  load(){
+    const serverData = loadServerData();
+    if(serverData) return withDemoFallback(serverData);
+    return loadLocalData() || seed();
+  },
+  save(d){ localStorage.setItem(STORE_KEY, JSON.stringify(d)); },
+  reset(){ localStorage.removeItem(STORE_KEY); localStorage.removeItem('ecmp_session'); this._d = null; },
   get(){ if(!this._d) this._d = this.load(); return this._d; },
   commit(){ this.save(this._d); },
 };
